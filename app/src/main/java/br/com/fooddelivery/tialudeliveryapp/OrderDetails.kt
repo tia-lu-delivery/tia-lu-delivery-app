@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -125,10 +126,10 @@ fun OrderDetailsScreen( ){
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                 )
             }
-            item { OrderItem()}
-            item { OrderItem()}
-            item { OrderItem()}
-            item { OrderTotal()}
+            item { OrderItem(3,  "Pizza",  50.0)}
+            item { OrderItem(1, "Refrigerante", 8.5)}
+            item { OrderItem(2, "Hambúrguer", 35.0)}
+            item { OrderTotalValue(93.50)}
             item { ActionButton() }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -136,6 +137,8 @@ fun OrderDetailsScreen( ){
     }
 }
 
+
+// cabeçalho do pedido: número de pedido, horário de abertura, status do pedido
 @Composable
 fun OrderHeader( orderNumber: String, openingTime: String, status: OrderStatus) {
     Row(
@@ -165,6 +168,7 @@ fun OrderHeader( orderNumber: String, openingTime: String, status: OrderStatus) 
     }
 }
 
+// cartão de informações do cliente: nome, telefone
 @Composable
 fun CustomerInfoCard( customerName: String, customerPhone: String){
     Card(
@@ -216,6 +220,7 @@ fun CustomerInfoCard( customerName: String, customerPhone: String){
     }
 }
 
+// cartao de endereço
 @Composable
 fun AddressCard(address: String){
     Card(
@@ -254,7 +259,7 @@ fun AddressCard(address: String){
 }
 
 @Composable
-fun OrderItem() {
+fun OrderItem(quantity: Int, name: String, price: Double) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -274,7 +279,7 @@ fun OrderItem() {
                     shadowElevation = 1.dp
                 ) {
                     Text(
-                        text = "3x",
+                        text = "${quantity}x",
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -282,24 +287,24 @@ fun OrderItem() {
                 }
 
                 Text(
-                    text = "Pizza",
+                    text = name,
                     fontWeight = FontWeight.Medium
                 )
             }
 
             Text(
-                text = "R$ 50",
+                text = "R$ %.2f".format(price),
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
         }
 
-        Divider(color = Color.LightGray, thickness = 1.dp)
+        HorizontalDivider( thickness = 2.dp, color = Color.LightGray)
     }
 }
 
 @Composable
-fun OrderTotal(){
+fun OrderTotalValue(totalValue: Double){
     Column ( modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -314,7 +319,7 @@ fun OrderTotal(){
                 fontSize = 18.sp
             )
             Text(
-                text = "R$ 150",
+                text = "R$ %.2f".format(totalValue),
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 fontSize = 18.sp
