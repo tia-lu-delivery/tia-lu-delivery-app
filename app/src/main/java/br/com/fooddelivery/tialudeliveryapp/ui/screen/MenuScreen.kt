@@ -47,7 +47,6 @@ fun RegisterMenuScreen(modifier: Modifier = Modifier) {
                 fontFamily = poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
-//                textAlign = TextAlign.Start,
                 modifier = Modifier
                     .padding(top = 24.dp)
                     .fillMaxWidth()

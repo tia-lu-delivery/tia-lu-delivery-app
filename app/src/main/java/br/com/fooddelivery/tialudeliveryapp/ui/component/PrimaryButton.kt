@@ -1,5 +1,6 @@
 package br.com.fooddelivery.tialudeliveryapp.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.fooddelivery.tialudeliveryapp.R
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.Orange80
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.Typography
+import br.com.fooddelivery.tialudeliveryapp.ui.theme.poppins
 
 @Composable
 fun PrimaryButton(modifier: Modifier = Modifier, text: String, icon: Int, onClick: () -> Unit) {
@@ -32,7 +35,10 @@ fun PrimaryButton(modifier: Modifier = Modifier, text: String, icon: Int, onClic
         shape = RoundedCornerShape(16.dp),
         onClick = onClick
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
@@ -41,7 +47,9 @@ fun PrimaryButton(modifier: Modifier = Modifier, text: String, icon: Int, onClic
             Text(
                 text = text,
                 style = Typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontFamily = poppins,
+                fontWeight = FontWeight.Bold
             )
         }
     }
