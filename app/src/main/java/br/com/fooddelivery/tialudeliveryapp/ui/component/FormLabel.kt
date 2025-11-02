@@ -1,7 +1,5 @@
 package br.com.fooddelivery.tialudeliveryapp.ui.component
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -19,17 +17,19 @@ import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangeGrey80
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 
 @Composable
-fun TextInput(modifier: Modifier = Modifier, name: String = "") {
+fun FormLabel(modifier: Modifier = Modifier, label: String = "") {
     var value by remember { mutableStateOf("") }
 
     TextField(
         value = value,
-        label = { Text(text = name) },
+        label = { Text(text = label) },
         onValueChange = { value = it },
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = OrangeGrey80,
             focusedContainerColor = OrangeGrey80,
-            focusedLabelColor = Color.Black
+            focusedLabelColor = Color.Black,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent
         ),
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
@@ -40,6 +40,6 @@ fun TextInput(modifier: Modifier = Modifier, name: String = "") {
 @Composable
 private fun TextInputPreview() {
     TiaLuDeliveryAppTheme {
-        TextInput(name = "Nome do Cardápio")
+        FormLabel(label = "Nome do Cardápio")
     }
 }
