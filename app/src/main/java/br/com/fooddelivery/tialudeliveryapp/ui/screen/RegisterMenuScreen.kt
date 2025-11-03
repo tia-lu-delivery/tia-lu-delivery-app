@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -24,10 +26,14 @@ import br.com.fooddelivery.tialudeliveryapp.ui.component.FormLabel
 import br.com.fooddelivery.tialudeliveryapp.ui.component.PrimaryButton
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.poppins
+import br.com.fooddelivery.tialudeliveryapp.ui.viewmodels.RegisterMenuViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun RegisterMenuScreen(modifier: Modifier = Modifier) {
+fun RegisterMenuScreen(modifier: Modifier = Modifier, viewModel: RegisterMenuViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
+    val menuNameViewModel by viewModel.menuName.collectAsState()
+
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -62,6 +68,8 @@ fun RegisterMenuScreen(modifier: Modifier = Modifier) {
 
                 FormLabel(
                     label = "Nome do cardapio",
+                    value = menuNameViewModel,
+                    onValueChange = { viewModel.updateMenuName(it) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
