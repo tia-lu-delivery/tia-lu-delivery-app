@@ -6,12 +6,8 @@ import kotlinx.coroutines.delay
 
 /**
  * SIMULAÇÃO TEMPORÁRIA da camada de dados (Tarefa #21)
- * Os imports acima inclusive estão pegando as classes
- * que Fátima implementou, como não estão "sincronizados"
- * eu colei todas as pastas aqui, senão ia ficar como se fosse erro.
- * Aí eu ia ficar codando no escuro praticamente, não pensei numa solução melhor
- * e queria que ficasse tudo ligadinho já. (Apesar que esse é o arquivo temporário e Ismael que vai fazer o outr0
- */
+*/
+
 class OrdersRepository {
 
     // Simula a busca pelo status 'Pending' na API, com 1.5s de espera da rede
@@ -57,3 +53,25 @@ class OrdersRepository {
         return true // Simula sucesso
     }
 }
+
+/*Substituir depois da API pronta:
+package br.com.fooddelivery.tialudeliveryapp.data.repository
+
+import br.com.fooddelivery.tialudeliveryapp.data.model.PendingOrder
+import br.com.fooddelivery.tialudeliveryapp.data.remote.RetrofitClient
+
+class OrdersRepository {
+
+    private val apiService = RetrofitClient.orderService
+
+    // Chama GET /orders/list?status=Pending
+    suspend fun getPendingOrders(): List<PendingOrder> {
+        val response = apiService.getOrdersByStatus("Pending")
+
+        if (response.isSuccessful) {
+            return response.body() ?: emptyList()
+        } else {
+            throw Exception("Erro ao buscar pedidos pendentes: ${response.code()} - ${response.message()}")
+        }
+    }
+}*/
