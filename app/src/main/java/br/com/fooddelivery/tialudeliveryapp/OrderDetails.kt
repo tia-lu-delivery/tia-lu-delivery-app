@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Place
@@ -21,7 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,6 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,34 +41,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangeLight
+import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
+import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangePrimary
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.PurpleGrey80
+import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderDetailsViewModel
 
-enum class OrderStatus{
-    PENDENTE,
-    FAZENDO,
-    FEITO,
-    SAIU_ENTREGA,
-    ENTREGUE
-}
 
-data class OrderItem(
-    val id: String,
-    val name: String,
-    val quantity: Int,
-    val price: Double
-)
-
-data class Order(
-    val orderNumber: String,
-    val openingTime: String,
-    val status: OrderStatus,
-    val customerName: String,
-    val customerPhone: String,
-    val deliveryAddress: String,
-    val items: List<OrderItem>
-)
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -79,7 +60,14 @@ fun OrderDetailsPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderDetailsScreen( ){
+fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
+    LaunchedEffect(Unit) {
+        viewModel.loadOrder()
+    }
+
+    val orderState = viewModel.order.observeAsState()
+    val order = orderState.value
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,44 +87,57 @@ fun OrderDetailsScreen( ){
                 )
         }
     ){ paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                OrderHeader(
-                    "123",
-                    "10:20",
-                    OrderStatus.PENDENTE
-                )
-            }
-            item { CustomerInfoCard(
-                "Maria Silva",
-                "(75) 98754-8585"
-            ) }
-            item { AddressCard("Morada nobre, 75, Apto 75B, Rua C  Ipira-BA") }
-            item {
-                Text(
-                    text = "Itens do Pedido",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                )
-            }
-            item { OrderItem(3,  "Pizza",  50.0)}
-            item { OrderItem(1, "Refrigerante", 8.5)}
-            item { OrderItem(2, "Hambúrguer", 35.0)}
-            item { OrderTotalValue(93.50)}
-            item { ActionButton() }
+        order?.let {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    OrderHeader(
+                        it.orderNumber,
+                        it.openingTime,
+                        it.status
+                    )
+                }
+                item { CustomerInfoCard(
+                    it.customerName,
+                    it.customerPhone
+                ) }
+                item { AddressCard(it.deliveryAddress) }
+                item {
+                    Text(
+                        text = "Itens do Pedido",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+                items(it.items) { item ->
+                    OrderItem(item)
+                }
+
+                item {
+                    val total = it.items.sumOf { i -> i.price * i.quantity }
+                    OrderTotalValue(total)
+                }
+
+
+                item {
+                    ActionButton(
+                    buttonText = viewModel.getTextButton(),
+                    onClick = { viewModel.moveFowardStatus() })
+                }
+
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+            }
         }
+
     }
 }
-
 
 // cabeçalho do pedido: número de pedido, horário de abertura, status do pedido
 @Composable
@@ -259,7 +260,7 @@ fun AddressCard(address: String){
 }
 
 @Composable
-fun OrderItem(quantity: Int, name: String, price: Double) {
+fun OrderItem(item: OrderItem) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -279,7 +280,7 @@ fun OrderItem(quantity: Int, name: String, price: Double) {
                     shadowElevation = 1.dp
                 ) {
                     Text(
-                        text = "${quantity}x",
+                        text = "${item.quantity}x",
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -287,13 +288,13 @@ fun OrderItem(quantity: Int, name: String, price: Double) {
                 }
 
                 Text(
-                    text = name,
+                    text = item.name,
                     fontWeight = FontWeight.Medium
                 )
             }
 
             Text(
-                text = "R$ %.2f".format(price),
+                text = "R$ ${item.price}",
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
@@ -319,7 +320,7 @@ fun OrderTotalValue(totalValue: Double){
                 fontSize = 18.sp
             )
             Text(
-                text = "R$ %.2f".format(totalValue),
+                text = "R$${totalValue}",
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 fontSize = 18.sp
@@ -329,9 +330,9 @@ fun OrderTotalValue(totalValue: Double){
 }
 
 @Composable
-fun ActionButton() {
+fun ActionButton(buttonText: String, onClick: () -> Unit) {
     Button(
-        onClick = {  },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -347,7 +348,7 @@ fun ActionButton() {
         )
     ) {
         Text(
-            text = "Aceitar Pedido",
+            text = buttonText,
             fontWeight = FontWeight.Bold
         )
     }
@@ -356,11 +357,12 @@ fun ActionButton() {
 @Composable
 fun OrderStatusCard(status: OrderStatus){
     val text = when (status){
-        OrderStatus.PENDENTE -> "Pendente"
+        OrderStatus.ABERTO -> "Aberto"
+        OrderStatus.ACEITO -> "Aceito"
         OrderStatus.FAZENDO -> "Fazendo"
-        OrderStatus.FEITO ->  "Feito"
-        OrderStatus.SAIU_ENTREGA ->  "Saiu p/ Entrega"
-        OrderStatus.ENTREGUE ->  "Entregue"
+        OrderStatus.ESPERANDO_ENTREGADOR -> "Aguardando Entregador"
+        OrderStatus.SAIU_PARA_ENTREGA -> "Saiu p/ Entrega"
+        OrderStatus.ENTREGUE -> "Entregue"
     }
     Surface(
         shape = RoundedCornerShape(16.dp),
