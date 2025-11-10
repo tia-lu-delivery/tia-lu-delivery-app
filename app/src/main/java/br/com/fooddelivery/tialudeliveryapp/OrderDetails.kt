@@ -129,7 +129,7 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
             }
             item { order?.let {
                     ActionButton(buttonText = viewModel.getTextButton(),
-                    onClick = {viewModel.moveFowardStatus() }
+                    onClick = {viewModel.moveForwardStatus() }
                     )
                 }
             }
@@ -361,7 +361,7 @@ fun OrderStatusCard(status: OrderStatus){
         OrderStatus.ABERTO -> "Pendente"
         OrderStatus.ACEITO ->  "Pedido Confirmado"
         OrderStatus.FAZENDO -> "Fazendo"
-        OrderStatus.ESPERANDO_ENTREGADOR ->  "Esperando Entregador"
+        OrderStatus.FEITO ->  "Feito"
         OrderStatus.SAIU_PARA_ENTREGA ->  "Saiu p/ Entrega"
         OrderStatus.ENTREGUE ->  "Entregue"
     }
