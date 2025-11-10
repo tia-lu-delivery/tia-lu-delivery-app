@@ -38,10 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangePrimary
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.PurpleGrey80
 import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderDetailsViewModel
+import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.foundation.lazy.items
@@ -49,7 +49,7 @@ import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
 
 @Preview(showBackground = true)
 @Composable
-fun OrderDetailsPreview() {
+fun OrderDetailsPreview(viewModel: OrderDetailsViewModel = viewModel()) {
     MaterialTheme {
         OrderDetailsScreen()
     }

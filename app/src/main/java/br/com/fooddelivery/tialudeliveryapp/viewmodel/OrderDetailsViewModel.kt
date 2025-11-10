@@ -28,14 +28,14 @@ class OrderDetailsViewModel : ViewModel(){
 
         _order.value = orderMock
     }
-    fun moveFowardStatus(){
+    fun moveForwardStatus(){
         val currentOrder = _order.value ?: return
 
         val proximoStatus = when (currentOrder.status) {
             OrderStatus.ABERTO -> OrderStatus.ACEITO
             OrderStatus.ACEITO -> OrderStatus.FAZENDO
-            OrderStatus.FAZENDO -> OrderStatus.ESPERANDO_ENTREGADOR
-            OrderStatus.ESPERANDO_ENTREGADOR -> OrderStatus.SAIU_PARA_ENTREGA
+            OrderStatus.FAZENDO -> OrderStatus.FEITO
+            OrderStatus.FEITO -> OrderStatus.SAIU_PARA_ENTREGA
             OrderStatus.SAIU_PARA_ENTREGA -> OrderStatus.ENTREGUE
             OrderStatus.ENTREGUE -> OrderStatus.ENTREGUE
         }
@@ -50,7 +50,7 @@ class OrderDetailsViewModel : ViewModel(){
             OrderStatus.ABERTO -> "Aceitar Pedido"
             OrderStatus.ACEITO -> "Iniciar Preparo"
             OrderStatus.FAZENDO -> "Marcar Como Feito"
-            OrderStatus.ESPERANDO_ENTREGADOR -> "Sair para entrega"
+            OrderStatus.FEITO -> "Sair para entrega"
             OrderStatus.SAIU_PARA_ENTREGA -> "Marcar como entregue"
             OrderStatus.ENTREGUE -> "Pedido Entregue"
             null -> "..."
