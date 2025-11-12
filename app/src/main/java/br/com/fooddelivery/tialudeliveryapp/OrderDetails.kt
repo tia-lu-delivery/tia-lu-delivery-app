@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +33,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,9 +53,9 @@ import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
 
 @Preview(showBackground = true)
 @Composable
-fun OrderDetailsPreview(viewModel: OrderDetailsViewModel = viewModel()) {
+fun OrderDetailsPreview() {
     MaterialTheme {
-        OrderDetailsScreen()
+        OrderDetailsScreen( )
     }
 }
 
@@ -84,64 +88,61 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
                 )
         }
     ){ paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                order?.let{
+        order?.let {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
                     OrderHeader(
                         it.orderNumber,
                         it.openingTime,
                         it.status
                     )
                 }
-            }
-            item { order?.let{
-                    CustomerInfoCard(
+                item { CustomerInfoCard(
                     it.customerName,
                     it.customerPhone
+                ) }
+                item { AddressCard(it.deliveryAddress) }
+                item {
+                    Text(
+                        text = "Itens do Pedido",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                     )
                 }
-            }
-            item { order?.let {
-                AddressCard(it.deliveryAddress) } }
-            item {
-                Text(
-                    text = "Itens do Pedido",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                )
-            }
-            order?.let { pedido ->
-                items(pedido.items) { item ->
+
+                items(it.items) { item ->
                     OrderItem(item)
                 }
-            }
-            item {
-                order?.let { order ->
-                    OrderTotal(order.items)
+
+                item {
+                    val total = it.items.sumOf { i -> i.price * i.quantity }
+                    OrderTotalValue(total)
                 }
-            }
-            item { order?.let {
-                    ActionButton(buttonText = viewModel.getTextButton(),
-                    onClick = {viewModel.moveForwardStatus() }
-                    )
-                }
-            }
 
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+                item {
+                    ActionButton(
+                    buttonText = viewModel.getTextButton(),
+                    onClick = { viewModel.moveFowardStatus() })
+                }
+
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+            }
         }
+
     }
 }
 
+// cabeçalho do pedido: número de pedido, horário de abertura, status do pedido
 @Composable
-fun OrderHeader(orderNumber: String, openingTime: String, status: OrderStatus) {
+fun OrderHeader( orderNumber: String, openingTime: String, status: OrderStatus) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,6 +170,7 @@ fun OrderHeader(orderNumber: String, openingTime: String, status: OrderStatus) {
     }
 }
 
+// cartão de informações do cliente: nome, telefone
 @Composable
 fun CustomerInfoCard( customerName: String, customerPhone: String){
     Card(
@@ -220,6 +222,7 @@ fun CustomerInfoCard( customerName: String, customerPhone: String){
     }
 }
 
+// cartao de endereço
 @Composable
 fun AddressCard(address: String){
     Card(
@@ -298,14 +301,12 @@ fun OrderItem(item: OrderItem) {
             )
         }
 
-        Divider(color = Color.LightGray, thickness = 1.dp)
+        HorizontalDivider( thickness = 2.dp, color = Color.LightGray)
     }
 }
 
 @Composable
-fun OrderTotal(orderItems : List<OrderItem>){
-    val totalValue = orderItems.sumOf { it.price * it.quantity }
-
+fun OrderTotalValue(totalValue: Double){
     Column ( modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -320,7 +321,7 @@ fun OrderTotal(orderItems : List<OrderItem>){
                 fontSize = 18.sp
             )
             Text(
-                text = "R$$totalValue",
+                text = "R$${totalValue}",
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 fontSize = 18.sp
@@ -330,10 +331,9 @@ fun OrderTotal(orderItems : List<OrderItem>){
 }
 
 @Composable
-fun ActionButton(buttonText: String,
-                 onClick: () -> Unit) {
+fun ActionButton(buttonText: String, onClick: () -> Unit) {
     Button(
-        onClick = {  },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
