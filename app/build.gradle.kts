@@ -57,6 +57,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
 

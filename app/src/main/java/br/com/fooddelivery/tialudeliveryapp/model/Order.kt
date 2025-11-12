@@ -11,7 +11,7 @@ enum class OrderStatus {
     ABERTO,
     ACEITO,
     FAZENDO,
-    ESPERANDO_ENTREGADOR,
+    FEITO,
     SAIU_PARA_ENTREGA,
     ENTREGUE,
 }

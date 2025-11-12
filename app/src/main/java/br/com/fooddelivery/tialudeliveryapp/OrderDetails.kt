@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -41,14 +42,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
-import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangePrimary
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.PurpleGrey80
 import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderDetailsViewModel
-
-
+import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.foundation.lazy.items
+import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
 
 @Preview(showBackground = true)
 @Composable
@@ -61,11 +62,11 @@ fun OrderDetailsPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
-    LaunchedEffect(Unit) {
-        viewModel.loadOrder()
-    }
 
+    val viewModel : OrderDetailsViewModel = viewModel()
+    viewModel.loadOrder()
     val orderState = viewModel.order.observeAsState()
+
     val order = orderState.value
 
     Scaffold(
@@ -357,12 +358,12 @@ fun ActionButton(buttonText: String, onClick: () -> Unit) {
 @Composable
 fun OrderStatusCard(status: OrderStatus){
     val text = when (status){
-        OrderStatus.ABERTO -> "Aberto"
-        OrderStatus.ACEITO -> "Aceito"
+        OrderStatus.ABERTO -> "Pendente"
+        OrderStatus.ACEITO ->  "Pedido Confirmado"
         OrderStatus.FAZENDO -> "Fazendo"
-        OrderStatus.ESPERANDO_ENTREGADOR -> "Aguardando Entregador"
-        OrderStatus.SAIU_PARA_ENTREGA -> "Saiu p/ Entrega"
-        OrderStatus.ENTREGUE -> "Entregue"
+        OrderStatus.FEITO ->  "Feito"
+        OrderStatus.SAIU_PARA_ENTREGA ->  "Saiu p/ Entrega"
+        OrderStatus.ENTREGUE ->  "Entregue"
     }
     Surface(
         shape = RoundedCornerShape(16.dp),
