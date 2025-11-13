@@ -1,10 +1,9 @@
 package br.com.fooddelivery.tialudeliveryapp.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.fooddelivery.tialudeliveryapp.OrdersRepository
+import br.com.fooddelivery.tialudeliveryapp.repository.OrdersRepository
+import br.com.fooddelivery.tialudeliveryapp.model.Order
 import br.com.fooddelivery.tialudeliveryapp.model.OrderPresentation
 import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import br.com.fooddelivery.tialudeliveryapp.model.toLabelPt
@@ -17,7 +16,6 @@ import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlin.collections.map
 
 data class OrdersUiState(
     val orders: List<OrderPresentation> = emptyList(),
@@ -30,7 +28,7 @@ class OrdersViewModel(
     private val repository: OrdersRepository
 ) : ViewModel() {
 
-    private val _allOrders = MutableStateFlow<List<br.com.fooddelivery.tialudeliveryapp.model.Order>>(emptyList())
+    private val _allOrders = MutableStateFlow<List<Order>>(emptyList())
     private val _filter = MutableStateFlow<OrderStatus?>(null)
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
@@ -39,7 +37,6 @@ class OrdersViewModel(
         null to "Todos"
     ) + OrderStatus.values().map { it to it.toLabelPt() }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     val uiState: StateFlow<OrdersUiState> = combine(
         _allOrders, _filter, _isLoading, _error
     ) { all, filter, loading, error ->
@@ -68,7 +65,7 @@ class OrdersViewModel(
             _isLoading.value = true
             _error.value = null
             try {
-                val list = repository.fetchOrdersByStatus(status)
+                val list = if (status == null) repository.fetchOrders() else repository.fetchOrdersByStatus(status)
                 _allOrders.value = list
             } catch (t: Throwable) {
                 _error.value = t.localizedMessage ?: "Erro ao carregar pedidos"
@@ -78,15 +75,12 @@ class OrdersViewModel(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun applyFilterAndSort(all: List<br.com.fooddelivery.tialudeliveryapp.model.Order>, filter: OrderStatus?): List<br.com.fooddelivery.tialudeliveryapp.model.Order> {
+    private fun applyFilterAndSort(all: List<Order>, filter: OrderStatus?): List<Order> {
         val filtered = if (filter == null) all else all.filter { it.status == filter }
         return filtered.sortedByDescending { parseOpenedAtToEpochMillis(it.openedAt) }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun toPresentation(order: br.com.fooddelivery.tialudeliveryapp.model.Order): OrderPresentation {
-
+    private fun toPresentation(order: Order): OrderPresentation {
         return OrderPresentation(
             id = order.id,
             userName = order.userName,
@@ -96,7 +90,6 @@ class OrdersViewModel(
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun formatOpenedAt(iso: String): String {
         return try {
             val odt = OffsetDateTime.parse(iso)
@@ -107,7 +100,6 @@ class OrdersViewModel(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun parseOpenedAtToEpochMillis(iso: String): Long {
         return try {
             val odt = OffsetDateTime.parse(iso)
