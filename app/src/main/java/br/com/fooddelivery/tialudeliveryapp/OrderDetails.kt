@@ -63,10 +63,10 @@ fun OrderDetailsPreview() {
 @Composable
 fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
 
-    val viewModel : OrderDetailsViewModel = viewModel()
-    viewModel.loadOrder()
+    LaunchedEffect(Unit) {
+        viewModel.loadOrder()
+    }
     val orderState = viewModel.order.observeAsState()
-
     val order = orderState.value
 
     Scaffold(
@@ -130,7 +130,7 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
                 item {
                     ActionButton(
                     buttonText = viewModel.getTextButton(),
-                    onClick = { viewModel.moveFowardStatus() })
+                    onClick = { viewModel.moveForwardStatus() })
                 }
 
                 item { Spacer(modifier = Modifier.height(16.dp)) }
