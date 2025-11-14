@@ -14,6 +14,7 @@ enum class OrderStatus {
     FEITO,
     SAIU_PARA_ENTREGA,
     ENTREGUE,
+    CANCELADO
 }
 data class Order(
     val orderNumber: String,
@@ -22,5 +23,7 @@ data class Order(
     val customerName: String,
     val customerPhone: String,
     val deliveryAddress: String,
-    val items: MutableList<OrderItem>
+    val items: MutableList<OrderItem>,
+    val restaurantName: String,
+    val totalValue: Double
 )
