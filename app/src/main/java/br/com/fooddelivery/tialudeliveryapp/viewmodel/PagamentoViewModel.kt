@@ -1,5 +1,7 @@
 package br.com.fooddelivery.tialudeliveryapp.viewmodel
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
@@ -37,10 +39,20 @@ class PagamentoViewModel : ViewModel() {
         mensagem.value = ""
     }
 
-    fun registrarPagamento(editId: Int? = null) {
+    fun registrarPagamento(context: Context, editId: Int? = null) {
+
         val valorDouble = valor.value.replace(",", ".").toDoubleOrNull()
         if (valorDouble == null || valorDouble <= 0.0) {
             mensagem.value = "Informe um valor válido"
+
+            val toast = Toast.makeText(context, "Erro: Valor inválido!", Toast.LENGTH_LONG)
+            toast.show()
+
+            Thread {
+                Thread.sleep(30000)
+                limparMensagem()
+            }.start()
+
             return
         }
 
@@ -50,19 +62,39 @@ class PagamentoViewModel : ViewModel() {
                 else p
             }
             mensagem.value = "Pagamento editado com sucesso!"
+
+            val toast = Toast.makeText(context, "Pagamento atualizado!", Toast.LENGTH_LONG)
+            toast.show()
+
         } else {
             val novo = Pagamento(contadorId++, valorDouble, formaPagamento.value)
             listaPagamentos.value = listaPagamentos.value + novo
             mensagem.value = "Pagamento registrado com sucesso!"
+
+            val toast = Toast.makeText(context, "Pagamento adicionado!", Toast.LENGTH_LONG)
+            toast.show()
         }
+
+        Thread {
+            Thread.sleep(30000)
+            limparMensagem()
+        }.start()
 
         valor.value = ""
         formaPagamento.value = "Dinheiro"
     }
 
-    fun excluirPagamento(id: Int) {
+    fun excluirPagamento(context: Context, id: Int) {
         listaPagamentos.value = listaPagamentos.value.filter { it.id != id }
         mensagem.value = "Pagamento excluído"
+
+        val toast = Toast.makeText(context, "Pagamento removido!", Toast.LENGTH_LONG)
+        toast.show()
+
+        Thread {
+            Thread.sleep(30000)
+            limparMensagem()
+        }.start()
     }
 
     fun editarPagamento(pagamento: Pagamento) {
