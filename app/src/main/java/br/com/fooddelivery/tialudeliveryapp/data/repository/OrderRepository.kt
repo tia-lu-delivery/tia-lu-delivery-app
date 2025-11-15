@@ -75,5 +75,12 @@ class OrderRepository {
     suspend fun updateOrder(orderId: String, updatedOrder: Order): Order {
         return api.updateOrder(orderId, updatedOrder) // para a implementação furua do botão de "iniciar preparo"
     }
+
+    suspend fun getAllOrders(): List<Order> {
+        // retorno da API
+        // return api.getOrders(page, size)
+
+        return mockData
+    }
 }
 
