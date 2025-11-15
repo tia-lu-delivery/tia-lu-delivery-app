@@ -1,5 +1,7 @@
 package br.com.fooddelivery.tialudeliveryapp.viewmodel
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
@@ -37,10 +39,19 @@ class PagamentoViewModel : ViewModel() {
         mensagem.value = ""
     }
 
-    fun registrarPagamento(editId: Int? = null) {
+    fun registrarPagamento(context: Context, editId: Int? = null) {
+
         val valorDouble = valor.value.replace(",", ".").toDoubleOrNull()
         if (valorDouble == null || valorDouble <= 0.0) {
             mensagem.value = "Informe um valor válido"
+
+            Toast.makeText(context, "Erro: valor inválido informado", Toast.LENGTH_LONG).show()
+
+            Thread {
+                Thread.sleep(30000)
+                limparMensagem()
+            }.start()
+
             return
         }
 
@@ -49,20 +60,39 @@ class PagamentoViewModel : ViewModel() {
                 if (p.id == editId) p.copy(valor = valorDouble, forma = formaPagamento.value)
                 else p
             }
+
             mensagem.value = "Pagamento editado com sucesso!"
+
+            Toast.makeText(context, "Edição realizada com sucesso", Toast.LENGTH_LONG).show()
+
         } else {
             val novo = Pagamento(contadorId++, valorDouble, formaPagamento.value)
             listaPagamentos.value = listaPagamentos.value + novo
+
             mensagem.value = "Pagamento registrado com sucesso!"
+
+            Toast.makeText(context, "Novo pagamento registrado", Toast.LENGTH_LONG).show()
         }
+
+        Thread {
+            Thread.sleep(30000)
+            limparMensagem()
+        }.start()
 
         valor.value = ""
         formaPagamento.value = "Dinheiro"
     }
 
-    fun excluirPagamento(id: Int) {
+    fun excluirPagamento(context: Context, id: Int) {
         listaPagamentos.value = listaPagamentos.value.filter { it.id != id }
         mensagem.value = "Pagamento excluído"
+
+        Toast.makeText(context, "Pagamento removido da lista", Toast.LENGTH_LONG).show()
+
+        Thread {
+            Thread.sleep(30000)
+            limparMensagem()
+        }.start()
     }
 
     fun editarPagamento(pagamento: Pagamento) {
