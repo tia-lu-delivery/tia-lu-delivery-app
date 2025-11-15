@@ -45,7 +45,8 @@ class PagamentoViewModel : ViewModel() {
         if (valorDouble == null || valorDouble <= 0.0) {
             mensagem.value = "Informe um valor válido"
 
-            Toast.makeText(context, "Erro: valor inválido informado", Toast.LENGTH_LONG).show()
+            val toast = Toast.makeText(context, "Erro: Valor inválido!", Toast.LENGTH_LONG)
+            toast.show()
 
             Thread {
                 Thread.sleep(30000)
@@ -60,18 +61,18 @@ class PagamentoViewModel : ViewModel() {
                 if (p.id == editId) p.copy(valor = valorDouble, forma = formaPagamento.value)
                 else p
             }
-
             mensagem.value = "Pagamento editado com sucesso!"
 
-            Toast.makeText(context, "Edição realizada com sucesso", Toast.LENGTH_LONG).show()
+            val toast = Toast.makeText(context, "Pagamento atualizado!", Toast.LENGTH_LONG)
+            toast.show()
 
         } else {
             val novo = Pagamento(contadorId++, valorDouble, formaPagamento.value)
             listaPagamentos.value = listaPagamentos.value + novo
-
             mensagem.value = "Pagamento registrado com sucesso!"
 
-            Toast.makeText(context, "Novo pagamento registrado", Toast.LENGTH_LONG).show()
+            val toast = Toast.makeText(context, "Pagamento adicionado!", Toast.LENGTH_LONG)
+            toast.show()
         }
 
         Thread {
@@ -87,7 +88,8 @@ class PagamentoViewModel : ViewModel() {
         listaPagamentos.value = listaPagamentos.value.filter { it.id != id }
         mensagem.value = "Pagamento excluído"
 
-        Toast.makeText(context, "Pagamento removido da lista", Toast.LENGTH_LONG).show()
+        val toast = Toast.makeText(context, "Pagamento removido!", Toast.LENGTH_LONG)
+        toast.show()
 
         Thread {
             Thread.sleep(30000)
