@@ -1,6 +1,8 @@
 package br.com.fooddelivery.tialudeliveryapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
+import br.com.fooddelivery.tialudeliveryapp.network.KtorHttpClient
+import br.com.fooddelivery.tialudeliveryapp.network.model.CreateMenuRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,12 +17,12 @@ class RegisterMenuViewModel : ViewModel() {
         _menuName.value = name
     }
 
-    fun saveMenu() {
-        // implementar chamada de API -- Cesar
+    suspend fun saveMenu() {
+
         val name = _menuName.value
 
         if (name.isNotBlank()) {
-            println("Salvando cardápio: $name")
+            KtorHttpClient.postCreateMenu(data = CreateMenuRequest(name = name))
         }
     }
 }
