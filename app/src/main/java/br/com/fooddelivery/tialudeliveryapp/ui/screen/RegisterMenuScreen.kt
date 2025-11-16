@@ -28,6 +28,7 @@ import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.poppins
 import br.com.fooddelivery.tialudeliveryapp.ui.viewmodels.RegisterMenuViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun RegisterMenuScreen(modifier: Modifier = Modifier, viewModel: RegisterMenuViewModel = viewModel()) {
@@ -91,7 +92,11 @@ fun RegisterMenuScreen(modifier: Modifier = Modifier, viewModel: RegisterMenuVie
                 text = "Salvar",
                 icon = R.drawable.ic_launcher_foreground,
                 modifier = Modifier.fillMaxWidth()
-            ) { }
+            ) {
+                runBlocking {
+                    viewModel.saveMenu()
+                }
+            }
         }
     }
 }
