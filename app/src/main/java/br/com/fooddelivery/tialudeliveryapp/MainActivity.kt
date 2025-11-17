@@ -1,7 +1,5 @@
 package br.com.fooddelivery.tialudeliveryapp
 
-import OrdersViewModel
-import OrdersViewModelFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,8 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fooddelivery.tialudeliveryapp.data.repository.OrdersRepositoryImpl
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
-import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrdersViewModel
-import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrdersViewModelFactory
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,16 +26,6 @@ class MainActivity : ComponentActivity() {
             TiaLuDeliveryAppTheme {
 
 
-                val repository = OrdersRepositoryImpl()
-
-                val factory = OrdersViewModelFactory(repository)
-
-                val ordersViewModel: OrdersViewModel = viewModel(factory = factory)
-
-
-                LaunchedEffect(Unit) {
-                    ordersViewModel.loadOrders()
-                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize()

@@ -3,7 +3,6 @@ package br.com.fooddelivery.tialudeliveryapp.data.network
 import com.google.gson.annotations.SerializedName
 
 data class OrderDto(
-    @SerializedName("id")
     val id: String,
 
     @SerializedName("userName")
