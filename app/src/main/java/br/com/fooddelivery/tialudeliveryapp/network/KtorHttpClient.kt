@@ -34,7 +34,7 @@ object KtorHttpClient {
 
     suspend fun postCreateMenu(data: CreateMenuRequest): Result<CreateMenuResponse> {
         Log.d("KtorHttpClient",  "data: $data")
-        return requirePost(url = "$BASE_URL/create/menu", body = data)
+        return requirePost(url = "$BASE_URL/menu/create", body = data)
     }
 
     private suspend inline fun <reified T> requireGet(
