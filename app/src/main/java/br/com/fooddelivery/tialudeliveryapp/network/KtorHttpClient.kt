@@ -17,7 +17,7 @@ import io.ktor.serialization.kotlinx.json.json
 
 object KtorHttpClient {
 
-    private const val BASE_URL = "http://10.10.10.24:8080"
+    private const val BASE_URL = "http://192.168.0.215:3333"
 
     val client = HttpClient(Android) {
         install(Logging)
