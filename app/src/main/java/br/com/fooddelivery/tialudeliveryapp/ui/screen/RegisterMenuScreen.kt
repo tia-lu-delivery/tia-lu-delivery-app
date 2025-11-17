@@ -93,9 +93,7 @@ fun RegisterMenuScreen(modifier: Modifier = Modifier, viewModel: RegisterMenuVie
                 icon = R.drawable.ic_launcher_foreground,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                runBlocking {
-                    viewModel.saveMenu()
-                }
+                viewModel.saveMenu()
             }
         }
     }
