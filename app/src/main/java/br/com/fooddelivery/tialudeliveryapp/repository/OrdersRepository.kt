@@ -1,7 +1,7 @@
 package br.com.fooddelivery.tialudeliveryapp.data.repository
 
-import br.com.fooddelivery.tialudeliveryapp.domain.Order
-import br.com.fooddelivery.tialudeliveryapp.domain.OrderStatus
+import br.com.fooddelivery.tialudeliveryapp.model.Order
+import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 
 interface OrdersRepository {
     suspend fun fetchOrders(): List<Order>
