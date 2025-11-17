@@ -1,5 +1,6 @@
 package br.com.fooddelivery.tialudeliveryapp.network
 
+import android.util.Log
 import br.com.fooddelivery.tialudeliveryapp.network.model.CreateMenuRequest
 import br.com.fooddelivery.tialudeliveryapp.network.model.CreateMenuResponse
 import br.com.fooddelivery.tialudeliveryapp.network.model.ProductDetailRequest
@@ -10,6 +11,7 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.contentType
@@ -31,8 +33,8 @@ object KtorHttpClient {
     }
 
     suspend fun postCreateMenu(data: CreateMenuRequest): Result<CreateMenuResponse> {
+        Log.d("KtorHttpClient",  "data: $data")
         return requirePost(url = "$BASE_URL/menu/create", body = data)
-
     }
 
     private suspend inline fun <reified T> requireGet(
@@ -40,7 +42,7 @@ object KtorHttpClient {
     ): Result<T> {
         return try {
             Result.success(
-                client.post(url).body()
+                client.get(url).body()
             )
         } catch (e: Exception) {
             Result.failure(e)
@@ -62,5 +64,4 @@ object KtorHttpClient {
             Result.failure(e)
         }
     }
-
 }
