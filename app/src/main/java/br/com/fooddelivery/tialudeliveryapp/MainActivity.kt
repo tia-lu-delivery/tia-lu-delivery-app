@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.fooddelivery.tialudeliveryapp.data.mock.product
 import br.com.fooddelivery.tialudeliveryapp.ui.screen.ProductDetailsScreen
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 
@@ -23,8 +22,7 @@ class MainActivity : ComponentActivity() {
             TiaLuDeliveryAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ProductDetailsScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        product = product
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
             }

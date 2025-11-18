@@ -1,6 +1,5 @@
 package br.com.fooddelivery.tialudeliveryapp.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,13 +24,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import br.com.fooddelivery.tialudeliveryapp.R
-import br.com.fooddelivery.tialudeliveryapp.data.mock.product
-import br.com.fooddelivery.tialudeliveryapp.data.model.Product
 import br.com.fooddelivery.tialudeliveryapp.ui.component.BackButton
 import br.com.fooddelivery.tialudeliveryapp.ui.component.product_details.ProductMainInfo
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangeGrey80
@@ -39,7 +34,7 @@ import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 import coil.compose.AsyncImage
 
 @Composable
-fun ProductDetailsScreen(modifier: Modifier = Modifier, product: Product) {
+fun ProductDetailsScreen(modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
@@ -65,7 +60,7 @@ fun ProductDetailsScreen(modifier: Modifier = Modifier, product: Product) {
             }
 
             AsyncImage(
-                model = product.imageUrl,
+                model =  "https://blog.biglar.com.br/wp-content/uploads/2024/08/iStock-1398630614.jpg",
                 contentDescription = "Product Image",
                 modifier = Modifier
                     .size(200.dp)
@@ -78,10 +73,10 @@ fun ProductDetailsScreen(modifier: Modifier = Modifier, product: Product) {
             Spacer(modifier = Modifier.height(24.dp))
 
             ProductMainInfo(
-                productName = product.name,
-                productDescription = product.descripton,
-                productQuantity =  product.quantity,
-                productPrice = product.price
+                productName =  "X-Burger Clássico",
+                productDescription =  "Hambúrguer de 180g, queijo cheddar, alface, tomate e maionese especial no pão brioche.",
+                productQuantity =  50,
+                productPrice = 25.90
             )
         }
 
@@ -102,6 +97,6 @@ fun ProductDetailsScreen(modifier: Modifier = Modifier, product: Product) {
 @Composable
 private fun ProductDetailScreenPreview() {
     TiaLuDeliveryAppTheme() {
-        ProductDetailsScreen(product = product)
+        ProductDetailsScreen()
     }
 }
