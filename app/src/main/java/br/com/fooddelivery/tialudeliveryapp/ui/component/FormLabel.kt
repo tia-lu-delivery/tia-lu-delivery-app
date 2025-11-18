@@ -17,13 +17,12 @@ import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangeGrey80
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 
 @Composable
-fun FormLabel(modifier: Modifier = Modifier, label: String = "") {
-    var value by remember { mutableStateOf("") }
+fun FormLabel(modifier: Modifier = Modifier, label: String = "", value: String, onValueChange: (String) -> Unit) {
 
     TextField(
         value = value,
         label = { Text(text = label) },
-        onValueChange = { value = it },
+        onValueChange = onValueChange,
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = OrangeGrey80,
             focusedContainerColor = OrangeGrey80,
@@ -40,6 +39,6 @@ fun FormLabel(modifier: Modifier = Modifier, label: String = "") {
 @Composable
 private fun TextInputPreview() {
     TiaLuDeliveryAppTheme {
-        FormLabel(label = "Nome do Cardápio")
+        FormLabel(label = "Nome do Cardápio", value = "No name", onValueChange = {})
     }
 }
