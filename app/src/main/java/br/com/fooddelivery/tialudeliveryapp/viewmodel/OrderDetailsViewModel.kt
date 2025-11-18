@@ -3,32 +3,56 @@ package br.com.fooddelivery.tialudeliveryapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 
 import  br.com.fooddelivery.tialudeliveryapp.model.Order
 import  br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
-import  br.com.fooddelivery.tialudeliveryapp.model.OrderItem
+import br.com.fooddelivery.tialudeliveryapp.data.repository.OrderRepository
+
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 import kotlin.String
 
-class OrderDetailsViewModel : ViewModel(){
-    private val _order = MutableLiveData<Order>()
-    val order: LiveData<Order> = _order
 
-    fun loadOrder() {
-        val orderMock = Order( //Alterar para sincronizar com a api depois (Ian)
-            orderNumber = "1023",
-            openingTime = "11:50 11-10-2025",
-            status = OrderStatus.ACEITO,
-            customerName = "Maria",
-            customerPhone = "(75) 99999-0000",
-            deliveryAddress = "Rua Francisco, 123",
-            items = mutableListOf(OrderItem("1", "Coca-cola", 2, 10.0),
-                OrderItem("0", "Guaraná", 2, 10.0))
-        )
+class OrderDetailsViewModel(
+    private val repository: OrderRepository = OrderRepository()
+) : ViewModel() {
 
-        _order.value = orderMock
+    private val _order = MutableStateFlow<Order?>(null)
+    val order: StateFlow<Order?> = _order.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val defaultValue = Order(
+        orderNumber = "0",
+        openingTime = "0",
+        status = OrderStatus.ACEITO,
+        customerName = "N/A",
+        customerPhone = "N/A",
+        deliveryAddress = "N/A",
+        items = mutableListOf()
+    )
+
+    fun loadOrder(orderId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val order = repository.getOrderById(orderId)
+                _order.value = order ?: defaultValue
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _order.value = defaultValue
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
-    fun moveForwardStatus(){
+
+    fun moveForwardStatus() {
         val currentOrder = _order.value ?: return
 
         val proximoStatus = when (currentOrder.status) {
@@ -39,9 +63,11 @@ class OrderDetailsViewModel : ViewModel(){
             OrderStatus.SAIU_PARA_ENTREGA -> OrderStatus.ENTREGUE
             OrderStatus.ENTREGUE -> OrderStatus.ENTREGUE
         }
-        val updatedOrder = currentOrder.copy(status = proximoStatus)
 
+        val updatedOrder = currentOrder.copy(status = proximoStatus)
         _order.value = updatedOrder
+
+        // viewModelScope.launch { repository.updateOrder(updatedOrder) } para implementação futura
     }
     fun getTextButton(): String{
         val currentStatus = _order.value?.status

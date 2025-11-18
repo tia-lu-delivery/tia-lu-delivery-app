@@ -1,5 +1,6 @@
 package br.com.fooddelivery.tialudeliveryapp
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,8 +48,8 @@ import br.com.fooddelivery.tialudeliveryapp.ui.theme.PurpleGrey80
 import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderDetailsViewModel
 import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
 
 @Preview(showBackground = true)
@@ -61,13 +62,16 @@ fun OrderDetailsPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()){
+fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()) {
 
     LaunchedEffect(Unit) {
-        viewModel.loadOrder()
+        viewModel.loadOrder("1020")
     }
-    val orderState = viewModel.order.observeAsState()
-    val order = orderState.value
+
+    val order by viewModel.order.collectAsState()
+    val loading by viewModel.isLoading.collectAsState() // para quando a API estiver funcionando, uma tela de loading ser exibida.
+    Log.d("DEBUG", order.toString())
+
 
     Scaffold(
         topBar = {
