@@ -2,21 +2,21 @@ package br.com.fooddelivery.tialudeliveryapp.data.network
 
 import br.com.fooddelivery.tialudeliveryapp.model.Order
 import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Body
+import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("order/{orderId}")
-    suspend fun getOrder(
-        @Path("orderId") orderId: String
-    ): Order
+    @GET("user/orders?page={page}&size={size}")
+    suspend fun getOrders(
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): OrdersResponse
 
-
-    @POST("order/{orderId}")
-    suspend fun updateOrder(
-        @Path("orderId") orderId: String,
-        @Body order: Order
-    ): Order
 }
+
+data class OrdersResponse(
+    val page: Int,
+    val size: Int,
+    val total_pedidos: Int,
+    val pedidos: List<Order>
+)
