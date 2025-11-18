@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import br.com.fooddelivery.tialudeliveryapp.data.mock.product
 import br.com.fooddelivery.tialudeliveryapp.ui.screen.ProductDetailsScreen
-import br.com.fooddelivery.tialudeliveryapp.ui.screen.RegisterMenuScreen
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 
 class MainActivity : ComponentActivity() {
