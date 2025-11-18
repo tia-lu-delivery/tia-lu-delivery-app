@@ -18,37 +18,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fooddelivery.tialudeliveryapp.ui.components.CardType
-
 import br.com.fooddelivery.tialudeliveryapp.ui.components.RegistrationTextField
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangeColor
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.ScreenBgColor
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
-import br.com.fooddelivery.tialudeliveryapp.ui.utils.Validators
+import br.com.fooddelivery.tialudeliveryapp.ui.viewmodel.PaymentViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentMethodScreen(
     onNavigateBack: () -> Unit = {},
-    onSavePayment: () -> Unit = {}
+    onSavePaymentSuccess: () -> Unit = {},
+    viewModel: PaymentViewModel = viewModel()
 ) {
     val context = LocalContext.current
-
-    var selectedType by remember { mutableStateOf("CREDITO") }
-
-    var cardNumber by remember { mutableStateOf("") }
-    var cardError by remember { mutableStateOf(false) }
-
-    var expiryDate by remember { mutableStateOf("") }
-    var dateError by remember { mutableStateOf(false) }
-
-    var cvv by remember { mutableStateOf("") }
-    var cvvError by remember { mutableStateOf(false) }
-
-    var cardName by remember { mutableStateOf("") }
-
-    var cpf by remember { mutableStateOf("") }
-    var cpfError by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = ScreenBgColor,
@@ -71,14 +57,35 @@ fun PaymentMethodScreen(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Cadastro de Pagamento", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 24.dp))
+            Text(
+                "Cadastro de Pagamento",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
             Text("Tipo de Cartão", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
+
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                CardType("Crédito", selectedType == "CREDITO", { selectedType = "CREDITO" }, Modifier.weight(1f))
-                CardType("Débito", selectedType == "DEBITO", { selectedType = "DEBITO" }, Modifier.weight(1f))
-                CardType("Refeição", selectedType == "REFEICAO", { selectedType = "REFEICAO" }, Modifier.weight(1f))
+                CardType(
+                    "Crédito",
+                    uiState.selectedType == "CREDITO",
+                    { viewModel.updateCardType("CREDITO") },
+                    Modifier.weight(1f)
+                )
+                CardType(
+                    "Débito",
+                    uiState.selectedType == "DEBITO",
+                    { viewModel.updateCardType("DEBITO") },
+                    Modifier.weight(1f)
+                )
+                CardType(
+                    "Refeição",
+                    uiState.selectedType == "REFEICAO",
+                    { viewModel.updateCardType("REFEICAO") },
+                    Modifier.weight(1f)
+                )
             }
 
             Spacer(Modifier.height(24.dp))
@@ -87,77 +94,53 @@ fun PaymentMethodScreen(
 
                 RegistrationTextField(
                     label = "Número do Cartão",
-                    placeholder = "Apenas números",
-                    value = cardNumber,
-                    onValueChange = { input ->
-                        if (input.length <= 16) {
-                            val clean = input.filter { it.isDigit() }
-                            cardNumber = clean
-                            cardError = clean.length > 12 && !Validators.isValidCard(clean)
-                        }
-                    },
+                    placeholder = "0000 0000 0000 0000",
+                    value = uiState.cardNumber,
+                    onValueChange = { viewModel.updateCardNumber(it) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = cardError,
-                    subtitle = if (cardError) "Cartão inválido" else null
+                    isError = uiState.cardError,
+                    subtitle = if (uiState.cardError) "Cartão inválido" else null
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
                         RegistrationTextField(
-                            label = "Validade (MMAA)",
-                            placeholder = "Ex: 1028",
-                            value = expiryDate,
-                            onValueChange = { input ->
-                                if (input.length <= 4) {
-                                    val clean = input.filter { it.isDigit() }
-                                    expiryDate = clean
-                                    dateError = clean.length == 4 && !Validators.isValidExpiryDate(clean)
-                                }
-                            },
+                            label = "Validade",
+                            placeholder = "MM/AA",
+                            value = uiState.expiryDate,
+                            onValueChange = { viewModel.updateExpiryDate(it) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            isError = dateError,
-                            subtitle = if (dateError) "Data inválida" else null
+                            isError = uiState.dateError,
+                            subtitle = if (uiState.dateError) "Data inválida" else null
                         )
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         RegistrationTextField(
                             label = "CVV",
-                            placeholder = "123",
-                            value = cvv,
-                            onValueChange = { input ->
-                                if (input.length <= 4) {
-                                    val clean = input.filter { it.isDigit() }
-                                    cvv = clean
-                                    cvvError = clean.length !in 0..4
-                                }
-                            },
+                            placeholder = "000",
+                            value = uiState.cvv,
+                            onValueChange = { viewModel.updateCvv(it) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                            isError = cvvError
+                            isError = uiState.cvvError
                         )
                     }
                 }
 
                 RegistrationTextField(
                     label = "Nome no Cartão",
-                    placeholder = "Como está no cartão",
-                    value = cardName,
-                    onValueChange = { cardName = it }
+                    placeholder = "Nome igual a do cartão",
+                    value = uiState.cardName,
+                    onValueChange = { viewModel.updateCardName(it) }
                 )
 
                 RegistrationTextField(
                     label = "CPF do Titular",
-                    placeholder = "Apenas números",
-                    value = cpf,
-                    onValueChange = { input ->
-                        if (input.length <= 11) {
-                            val clean = input.filter { it.isDigit() }
-                            cpf = clean
-                            cpfError = clean.length == 11 && !Validators.isValidCPF(clean)
-                        }
-                    },
+                    placeholder = "000.000.000-00",
+                    value = uiState.cpf,
+                    onValueChange = { viewModel.updateCpf(it) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = cpfError,
-                    subtitle = if (cpfError) "CPF inválido" else null
+                    isError = uiState.cpfError,
+                    subtitle = if (uiState.cpfError) "CPF inválido" else null
                 )
             }
 
@@ -166,15 +149,15 @@ fun PaymentMethodScreen(
 
             Button(
                 onClick = {
-                    val hasEmptyFields = cardNumber.isBlank() || expiryDate.length != 4 || cvv.length < 3 || cardName.isBlank() || cpf.length != 11
-                    val hasValidationErrors = cardError || dateError || cpfError
-
-                    if (hasEmptyFields) {
-                        Toast.makeText(context, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
-                    } else if (hasValidationErrors) {
-                        Toast.makeText(context, "Corrija os campos em vermelho", Toast.LENGTH_SHORT).show()
+                    if (viewModel.savePayment()) {
+                        onSavePaymentSuccess()
                     } else {
-                        onSavePayment()
+                        val msg = if (uiState.cardNumber.isBlank() || uiState.cardName.isBlank()) {
+                            "Preencha todos os campos"
+                        } else {
+                            "Corrija os campos em vermelho"
+                        }
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier
@@ -192,7 +175,7 @@ fun PaymentMethodScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PaymentScreenRealtimePreview() {
+fun PaymentScreenPreview() {
     TiaLuDeliveryAppTheme {
         PaymentMethodScreen()
     }
