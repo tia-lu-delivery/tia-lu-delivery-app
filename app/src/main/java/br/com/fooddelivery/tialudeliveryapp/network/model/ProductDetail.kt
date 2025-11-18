@@ -1,5 +1,6 @@
 package br.com.fooddelivery.tialudeliveryapp.network.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,11 +10,18 @@ data class ProductDetailRequest (
 
 @Serializable
 data class ProductDetailResponse (
-    val id_produto: String,
-    val nome: String,
-    val precoUnitario: Double,
-    val descricao: String,
-    val quantidadeEstoque: Int,
-    val imagemUrl: String,
-    val disponivel: Boolean
+    @SerialName("id_produto")
+    val productId: String,
+    @SerialName("nome")
+    val name: String,
+    @SerialName("precoUnitario")
+    val price: Double,
+    @SerialName("descricao")
+    val description: String,
+    @SerialName("quantidadeEstoque")
+    val quantity: Int,
+    @SerialName("imagemUrl")
+    val imageUrl: String,
+    @SerialName("disponivel")
+    val isAvailable: Boolean
 )
