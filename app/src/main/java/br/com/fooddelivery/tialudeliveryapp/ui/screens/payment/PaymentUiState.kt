@@ -20,3 +20,4 @@ data class PaymentUiState(
                 cardName.isNotBlank() &&
                 cpf.length == 11 && !cpfError
 }
+
