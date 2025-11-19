@@ -7,6 +7,6 @@ import retrofit2.http.POST
 
 interface MerchantApiService {
 
-    @POST("merchante/create")
+    @POST("merchant/create")
     suspend fun createMerchant(@Body establishment: Establishment): Response<Unit>
 }
