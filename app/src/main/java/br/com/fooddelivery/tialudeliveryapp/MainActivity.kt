@@ -34,24 +34,9 @@ class MainActivity : ComponentActivity() {
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
+                    TelaListaPedidos(pedidos = pedidosExemplo)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TiaLuDeliveryAppTheme {
-        Greeting("Android")
     }
 }
