@@ -3,22 +3,36 @@ package br.com.fooddelivery.tialudeliveryapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import br.com.fooddelivery.tialudeliveryapp.data.repository.OrdersRepositoryImpl
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
         setContent {
-            TiaLuDeliveryAppTheme  {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    val pedidosExemplo = listOf(
-                        Pedido("João Silva", "01/11/2025", "Pendente"),
-                        Pedido("Maria Santos", "30/10/2025", "Em preparo"),
-                        Pedido("Carlos Oliveira", "29/10/2025", "Entregue"),
-                        Pedido("Ana Costa", "28/10/2025", "Cancelado")
+            TiaLuDeliveryAppTheme {
+
+
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
                     )
                     TelaListaPedidos(pedidos = pedidosExemplo)
                 }
