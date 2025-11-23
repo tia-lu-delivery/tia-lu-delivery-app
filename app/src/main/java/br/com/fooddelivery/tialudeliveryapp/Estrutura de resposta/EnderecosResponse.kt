@@ -1,4 +1,4 @@
-package com.exemplo.enderecos.model
+package br.com.fooddelivery.tialudeliveryapp.ENDERECOS.DTO
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
