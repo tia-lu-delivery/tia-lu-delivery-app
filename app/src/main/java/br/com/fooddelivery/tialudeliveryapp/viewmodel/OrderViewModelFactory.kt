@@ -2,7 +2,7 @@ package br.com.fooddelivery.tialudeliveryapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import br.com.fooddelivery.tialudeliveryapp.repository.OrdersRepository
+import br.com.fooddelivery.tialudeliveryapp.data.repository.OrdersRepository
 
 class OrdersViewModelFactory(
     private val repository: OrdersRepository

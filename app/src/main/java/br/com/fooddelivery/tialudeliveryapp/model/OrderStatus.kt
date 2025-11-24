@@ -1,25 +1,21 @@
 package br.com.fooddelivery.tialudeliveryapp.model
 
 enum class OrderStatus {
-    AWAITING_APPROVAL,
-    ACCEPTED,
-    COOKING,
-    DONE,
-    WAITING_DELIVERY,
-    OUT_FOR_DELIVERY,
-    DELIVERED,
-    CANCELED,
-    REJECTED
+    ACEITO,
+    FAZENDO,
+    FEITO,
+    SAIU_PARA_ENTREGA,
+    ENTREGUE,
+    CANCELADO,
+    REJEITADO
 }
 
 fun OrderStatus.toLabelPt(): String = when (this) {
-    OrderStatus.AWAITING_APPROVAL -> "Aguardando aprovação"
-    OrderStatus.ACCEPTED -> "Aceito"
-    OrderStatus.COOKING -> "Em preparo"
-    OrderStatus.DONE -> "Feito"
-    OrderStatus.WAITING_DELIVERY -> "Esperando entregador"
-    OrderStatus.OUT_FOR_DELIVERY -> "Saiu para entrega"
-    OrderStatus.DELIVERED -> "Entregue"
-    OrderStatus.CANCELED -> "Cancelado"
-    OrderStatus.REJECTED -> "Rejeitado"
+    OrderStatus.ACEITO -> "Aceito"
+    OrderStatus.FAZENDO -> "Em preparo"
+    OrderStatus.FEITO -> "Feito"
+    OrderStatus.SAIU_PARA_ENTREGA -> "Saiu para entrega"
+    OrderStatus.ENTREGUE -> "Entregue"
+    OrderStatus.CANCELADO -> "Cancelado"
+    OrderStatus.REJEITADO -> "Rejeitado"
 }
