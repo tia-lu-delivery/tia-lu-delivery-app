@@ -24,7 +24,7 @@ data class OrdersUiState(
     val activeFilter: OrderStatus? = null
 )
 
-class OrdersViewModel(
+class OrdersListViewModel(
     private val repository: OrdersRepository
 ) : ViewModel() {
 
