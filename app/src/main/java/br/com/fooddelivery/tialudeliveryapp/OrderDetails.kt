@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -35,7 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -89,7 +87,7 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()) {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = OrangePrimary,
                     titleContentColor = Color.White)
-                )
+            )
         }
     ){ paddingValues ->
         order?.let {
@@ -133,8 +131,10 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel = viewModel()) {
 
                 item {
                     ActionButton(
-                    buttonText = viewModel.getTextButton(),
-                    onClick = { viewModel.moveForwardStatus() })
+                        buttonText = viewModel.getTextButton(),
+                        onClick = { viewModel.moveForwardStatus() },
+                        enabled = !viewModel.isLastStatus()
+                    )
                 }
 
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -335,7 +335,7 @@ fun OrderTotalValue(totalValue: Double){
 }
 
 @Composable
-fun ActionButton(buttonText: String, onClick: () -> Unit) {
+fun ActionButton(buttonText: String, onClick: () -> Unit, enabled: Boolean) {
     Button(
         onClick = onClick,
         modifier = Modifier
@@ -350,7 +350,8 @@ fun ActionButton(buttonText: String, onClick: () -> Unit) {
             defaultElevation = 4.dp,
             pressedElevation = 8.dp,
             disabledElevation = 0.dp
-        )
+        ),
+        enabled = enabled
     ) {
         Text(
             text = buttonText,

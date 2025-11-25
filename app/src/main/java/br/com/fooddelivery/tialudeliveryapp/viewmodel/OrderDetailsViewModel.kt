@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import  br.com.fooddelivery.tialudeliveryapp.model.Order
 import  br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import br.com.fooddelivery.tialudeliveryapp.data.repository.OrderRepository
+import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,5 +82,9 @@ class OrderDetailsViewModel(
             OrderStatus.ENTREGUE -> "Pedido Entregue"
             null -> "..."
         }
+    }
+    fun isLastStatus(): Boolean {
+        val currentStatus = _order.value?.status
+        return currentStatus == OrderStatus.ENTREGUE
     }
 }
