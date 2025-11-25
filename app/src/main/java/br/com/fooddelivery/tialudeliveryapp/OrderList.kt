@@ -1,19 +1,15 @@
 package br.com.fooddelivery.tialudeliveryapp
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,22 +17,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -44,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,20 +44,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.OrangePrimary
-import br.com.fooddelivery.tialudeliveryapp.ui.theme.PurpleGrey80
 import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderListViewModel
 import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import br.com.fooddelivery.tialudeliveryapp.model.Order
-import br.com.fooddelivery.tialudeliveryapp.model.OrderItem
-import br.com.fooddelivery.tialudeliveryapp.data.repository.mockData
+import br.com.fooddelivery.tialudeliveryapp.data.repository.mockData // Apenas se OrderCard usar, mas não mais usado em OrderListScreen
+import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderListUiState
+
 @Preview(showBackground = true)
 @Composable
 fun OrderDetailsPreview() {
@@ -80,18 +64,18 @@ fun OrderDetailsPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderListScreen(allOrders: List<Order> = mockData, onOrderClick : (String) -> Unit = {}) {
-    val pageSize = 5
-    var currentPage by remember { mutableIntStateOf(1) }
+fun OrderListScreen(onOrderClick: (String) -> Unit = {}) {
 
-    val totalOrders = allOrders.size
-    val maxPage = (totalOrders + pageSize - 1) / pageSize
+    val viewModel: OrderListViewModel = viewModel()
+    val state by viewModel.uiState.observeAsState(initial = OrderListUiState())
 
-    val paginatedOrders = remember(currentPage, allOrders) {
-        val start = (currentPage - 1) * pageSize
-        val end = (start + pageSize).coerceAtMost(totalOrders)
-        allOrders.subList(start, end)
+    LaunchedEffect(Unit) {
+        viewModel.loadOrders(1)
     }
+
+    val paginatedOrders = state.orders
+    val currentPage = state.currentPage
+    val maxPage = state.maxPage
 
     Scaffold(
         topBar = { OrderListTopAppBar() },
@@ -110,20 +94,20 @@ fun OrderListScreen(allOrders: List<Order> = mockData, onOrderClick : (String) -
                         horizontalArrangement = Arrangement.spacedBy(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         FilledIconButton(
-                            onClick = { if (currentPage > 1) currentPage-- },
+                            onClick = { viewModel.previousPage() },
                             enabled = currentPage > 1,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = OrangePrimary,
                                 contentColor = Color.White
                             )
                         ) {
-                            Row { Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Página anterior"
-                            ) }
-
+                            Row {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Página anterior"
+                                )
+                            }
                         }
                         Text(
                             text = "$currentPage /$maxPage",
@@ -131,7 +115,7 @@ fun OrderListScreen(allOrders: List<Order> = mockData, onOrderClick : (String) -
                             fontWeight = FontWeight.Bold
                         )
                         FilledIconButton(
-                            onClick = { if (currentPage < maxPage) currentPage++ },
+                            onClick = { viewModel.nextPage() },
                             enabled = currentPage < maxPage,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = OrangePrimary,
@@ -158,7 +142,9 @@ fun OrderListScreen(allOrders: List<Order> = mockData, onOrderClick : (String) -
             LazyColumn(modifier = Modifier.weight(1f))
             {
                 items(paginatedOrders) { pedido ->
-                    OrderCard(pedido, {})
+                    OrderCard(pedido) {
+                        onOrderClick(pedido.orderNumber)
+                    }
                 }
             }
         }
@@ -177,7 +163,7 @@ fun OrderListTopAppBar() {
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Voltar",
                     tint = Color.White,
-                    )
+                )
             }},
         actions = {
             BadgedBox(
