@@ -1,4 +1,4 @@
-package br.com.fooddelivery.tialudeliveryapp
+package br.com.fooddelivery.tialudeliveryapp.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,25 +13,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.fooddelivery.tialudeliveryapp.model.OrderPresentation
+import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
+import br.com.fooddelivery.tialudeliveryapp.model.toLabelPt
 
-data class Pedido(
-    val usuario: String,
-    val dataAbertura: String,
-    val status: String
-)
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaListaPedidos(pedidos: List<Pedido>) {
-    var statusSelecionado by remember { mutableStateOf("Todos") }
-    val listaStatus = listOf("Todos", "Pendente", "Em preparo", "Entregue", "Cancelado")
-
-    val pedidosFiltrados = if (statusSelecionado == "Todos") pedidos
-    else pedidos.filter { it.status == statusSelecionado }
+fun TelaListaPedidos(
+    orders: List<OrderPresentation>,
+    isLoading: Boolean,
+    errorMessage: String?,
+    availableFilters: List<Pair<OrderStatus?, String>>,
+    activeFilter: OrderStatus?,
+    onFilterChange: (OrderStatus?) -> Unit,
+    onRetry: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFFFFF)) // Fundo branco
+            .background(Color.White)
             .padding(16.dp)
     ) {
         Text(
@@ -44,40 +46,72 @@ fun TelaListaPedidos(pedidos: List<Pedido>) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        StatusFilterDropdown(
-            listaStatus = listaStatus,
-            statusSelecionado = statusSelecionado,
-            onStatusChange = { statusSelecionado = it }
-        )
+        // Dropdown sem menuAnchor
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                value = activeFilter?.toLabelPt() ?: "Todos",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Filtrar por status") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                availableFilters.forEach { (status, label) ->
+                    DropdownMenuItem(
+                        text = { Text(label) },
+                        onClick = {
+                            onFilterChange(status)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        if (isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return@Column
+        }
+
+        if (errorMessage != null) {
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Erro: $errorMessage")
+                Spacer(Modifier.height(8.dp))
+                Button(onClick = onRetry) { Text("Tentar novamente") }
+            }
+            return@Column
+        }
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(14.dp),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            items(pedidosFiltrados) { pedido ->
-                PedidoItem(pedido)
+            items(orders, key = { it.id }) { pedido ->
+                PedidoItemPresentation(pedido)
             }
         }
     }
 }
 
 @Composable
-fun PedidoItem(pedido: Pedido) {
-    val corStatus = when (pedido.status) {
-        "Entregue" -> Color(0xFF43A047)
-        "Cancelado" -> Color(0xFFD32F2F)
-        "Em preparo" -> Color(0xFFFFA726)
-        "Pendente" -> Color(0xFF757575)
-        else -> Color(0xFF616161)
-    }
-
+private fun PedidoItemPresentation(pedido: OrderPresentation) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = MaterialTheme.shapes.large
@@ -89,27 +123,19 @@ fun PedidoItem(pedido: Pedido) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(verticalArrangement = Arrangement.Center) {
-                Text(
-                    text = pedido.usuario,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1C1C1C)
-                )
-                Text(
-                    text = "Data: ${pedido.dataAbertura}",
-                    fontSize = 13.sp,
-                    color = Color(0xFF757575)
-                )
+            Column {
+                Text(pedido.customerName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Data: ${pedido.openedAtFormatted}", fontSize = 13.sp, color = Color.Gray)
             }
 
             Box(
                 modifier = Modifier
                     .background(
-                        color = when (pedido.status) {
-                            "Entregue" -> Color(0xFFE8F5E9)
-                            "Cancelado" -> Color(0xFFFFEBEE)
-                            "Em preparo" -> Color(0xFFFFF3E0)
+                        when (pedido.status) {
+                            OrderStatus.ENTREGUE -> Color(0xFFE8F5E9)
+                            OrderStatus.CANCELADO -> Color(0xFFFFEBEE)
+                            OrderStatus.FAZENDO -> Color(0xFFFFF3E0)
+                            OrderStatus.ACEITO -> Color(0xFFF5F5F5)
                             else -> Color(0xFFF5F5F5)
                         },
                         shape = MaterialTheme.shapes.medium
@@ -117,8 +143,14 @@ fun PedidoItem(pedido: Pedido) {
                     .padding(horizontal = 10.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = pedido.status,
-                    color = corStatus,
+                    pedido.statusLabel,
+                    color = when (pedido.status) {
+                        OrderStatus.ENTREGUE -> Color(0xFF43A047)
+                        OrderStatus.CANCELADO -> Color(0xFFD32F2F)
+                        OrderStatus.FAZENDO -> Color(0xFFFFA726)
+                        OrderStatus.ACEITO -> Color(0xFF757575)
+                        else -> Color(0xFF616161)
+                    },
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 13.sp
                 )
@@ -127,65 +159,39 @@ fun PedidoItem(pedido: Pedido) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun StatusFilterDropdown(
-    listaStatus: List<String>,
-    statusSelecionado: String,
-    onStatusChange: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        TextField(
-            value = statusSelecionado,
-            onValueChange = {},
-            label = { Text("Filtrar por status") },
-            readOnly = true,
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                .fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFFFF3E0), // Laranja clarinho
-                unfocusedContainerColor = Color(0xFFFFF3E0),
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedLabelColor = Color(0xFFFF9800),
-                cursorColor = Color(0xFFFF9800),
-                focusedTextColor = Color(0xFF1C1C1C),
-                unfocusedTextColor = Color(0xFF1C1C1C)
-            )
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            listaStatus.forEach { status ->
-                DropdownMenuItem(
-                    text = { Text(status) },
-                    onClick = {
-                        onStatusChange(status)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun PreviewTelaListaPedidos() {
-    val pedidosExemplo = listOf(
-        Pedido("João Silva", "01/11/2025", "Pendente"),
-        Pedido("Maria Santos", "30/10/2025", "Em preparo"),
-        Pedido("Carlos Oliveira", "29/10/2025", "Entregue"),
-        Pedido("Ana Costa", "28/10/2025", "Cancelado")
+fun TelaListaPedidosPreview() {
+    val sampleOrders = listOf(
+        OrderPresentation(
+            id = "1",
+            customerName = "João",
+            openedAtFormatted = "25/11/2025 12:00",
+            status = OrderStatus.ACEITO,
+            statusLabel = OrderStatus.ACEITO.toLabelPt()
+        ),
+        OrderPresentation(
+            id = "2",
+            customerName = "Maria",
+            openedAtFormatted = "25/11/2025 13:00",
+            status = OrderStatus.ENTREGUE,
+            statusLabel = OrderStatus.ENTREGUE.toLabelPt()
+        )
     )
-    TelaListaPedidos(pedidos = pedidosExemplo)
+
+    TelaListaPedidos(
+        orders = sampleOrders,
+        isLoading = false,
+        errorMessage = null,
+        availableFilters = listOf(
+            null to "Todos",
+            OrderStatus.ACEITO to "Aceito",
+            OrderStatus.ENTREGUE to "Entregue",
+            OrderStatus.FAZENDO to "Fazendo",
+            OrderStatus.CANCELADO to "Cancelado"
+        ),
+        activeFilter = null,
+        onFilterChange = {},
+        onRetry = {}
+    )
 }

@@ -45,7 +45,6 @@ android {
 
 dependencies {
 
-    // ----------- ANDROIDX + COMPOSE -----------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -55,19 +54,19 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.espresso.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // ViewModel Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
-    // ----------- RETROFIT + OKHTTP -----------
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14")
 
-    // ----------- TESTES UNITÁRIOS -----------
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
@@ -76,18 +75,8 @@ dependencies {
     testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation(kotlin("test"))
 
-    // ----------- TESTES INSTRUMENTADOS -----------
-    implementation(libs.androidx.runner)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    implementation(kotlin("test"))
-}
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }

@@ -5,31 +5,28 @@ import com.google.gson.annotations.SerializedName
 data class OrderDto(
     val id: String,
 
+    // Alguns backends usam "userName", outros "customerName". Mantemos ambos.
     @SerializedName("userName")
-    val userName: String,
+    val userName: String? = null,
+
+    @SerializedName("customerName")
+    val customerName: String? = null,
 
     @SerializedName("openedAt")
     val openedAt: String,
 
-    @SerializedName("customerName")
-    val customerName: String,
-
     @SerializedName("customerPhone")
-    val customerPhone: String,
+    val customerPhone: String? = null,
 
     @SerializedName("deliveryAddress")
-    val deliveryAddress: String,
+    val deliveryAddress: String? = null,
 
     @SerializedName("items")
-    val items: List<OrderItemDto>,
+    val items: List<OrderItemDto> = emptyList(),
 
     @SerializedName("totalPrice")
-    val totalPrice: Double,
+    val totalPrice: Double? = null,
 
     @SerializedName("status")
-    val status: String
+    val status: String? = null
 )
-
-class OrderItemDto(val id: String, val name: String, val quantity: Int, val price: Double) {
-
-}

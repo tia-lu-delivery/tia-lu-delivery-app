@@ -2,7 +2,7 @@ package br.com.fooddelivery.tialudeliveryapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.fooddelivery.tialudeliveryapp.repository.OrdersRepository
+import br.com.fooddelivery.tialudeliveryapp.data.repository.OrdersRepository
 import br.com.fooddelivery.tialudeliveryapp.model.Order
 import br.com.fooddelivery.tialudeliveryapp.model.OrderPresentation
 import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
@@ -24,7 +24,7 @@ data class OrdersUiState(
     val activeFilter: OrderStatus? = null
 )
 
-class OrdersViewModel(
+class OrdersListViewModel(
     private val repository: OrdersRepository
 ) : ViewModel() {
 
@@ -33,9 +33,8 @@ class OrdersViewModel(
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
-    val availableFilters: List<Pair<OrderStatus?, String>> = listOf(
-        null to "Todos"
-    ) + OrderStatus.values().map { it to it.toLabelPt() }
+    val availableFilters: List<Pair<OrderStatus?, String>> = listOf(null to "Todos") +
+            OrderStatus.values().map { it to it.toLabelPt() }
 
     val uiState: StateFlow<OrdersUiState> = combine(
         _allOrders, _filter, _isLoading, _error
@@ -83,7 +82,7 @@ class OrdersViewModel(
     private fun toPresentation(order: Order): OrderPresentation {
         return OrderPresentation(
             id = order.id,
-            userName = order.userName,
+            customerName = order.customerName,
             openedAtFormatted = formatOpenedAt(order.openedAt),
             status = order.status,
             statusLabel = order.status.toLabelPt()
