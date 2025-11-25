@@ -9,40 +9,63 @@ import org.springframework.stereotype.Service
 class EnderecoService {
 
     fun buscarEnderecos(usuarioId: String): EnderecosResponse {
-
         val listaMock = listOf(
             EnderecoMock(
-                12346, "05400-000", "Avenida", "Faria Lima",
-                "4509", "Pinheiros", "São Paulo", "SP",
-                "Casa 2", "Residencial", false
+                id = 12346,
+                cep = "05400-000",
+                tipoLogradouro = "Avenida",
+                logradouro = "Faria Lima",
+                numero = "4509",
+                bairro = "Pinheiros",
+                cidade = "São Paulo",
+                estado = "SP",
+                complemento = "Casa 2",
+                tipo = "Residencial",
+                padraoEntrega = false
             ),
             EnderecoMock(
-                12345, "01001-000", "Rua", "Direita",
-                "100", "Sé", "São Paulo", "SP",
-                "Bloco A", "Comercial", true
+                id = 12345,
+                cep = "01001-000",
+                tipoLogradouro = "Rua",
+                logradouro = "Direita",
+                numero = "100",
+                bairro = "Sé",
+                cidade = "São Paulo",
+                estado = "SP",
+                complemento = "Bloco A",
+                tipo = "Comercial",
+                padraoEntrega = true
             ),
             EnderecoMock(
-                12347, "70070-100", "SQS", "402 Sul",
-                "Bloco B", "Asa Sul", "Brasília", "DF",
-                "Apto 302", "Residencial", false
+                id = 12347,
+                cep = "70070-100",
+                tipoLogradouro = "SQS",
+                logradouro = "402 Sul",
+                numero = "Bloco B",
+                bairro = "Asa Sul",
+                cidade = "Brasília",
+                estado = "DF",
+                complemento = "Apto 302",
+                tipo = "Residencial",
+                padraoEntrega = false
             )
         )
 
         val ordenada = listaMock.sortedByDescending { it.padraoEntrega }
 
-        val dtos = ordenada.map {
+        val dtos = ordenada.map { endereco ->
             EnderecoDto(
-                idEndereco = it.id,
-                cep = it.cep,
-                tipoLogradouro = it.tipoLogradouro,
-                logradouro = it.logradouro,
-                numero = it.numero,
-                bairro = it.bairro,
-                cidade = it.cidade,
-                estado = it.estado,
-                complemento = it.complemento,
-                tipo = it.tipo,
-                padraoEntrega = it.padraoEntrega
+                idEndereco = endereco.id,
+                cep = endereco.cep,
+                tipoLogradouro = endereco.tipoLogradouro,
+                logradouro = endereco.logradouro,
+                numero = endereco.numero,
+                bairro = endereco.bairro,
+                cidade = endereco.cidade,
+                estado = endereco.estado,
+                complemento = endereco.complemento,
+                tipo = endereco.tipo,
+                padraoEntrega = endereco.padraoEntrega
             )
         }
 
