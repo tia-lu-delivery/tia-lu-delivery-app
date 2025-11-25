@@ -6,7 +6,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-
     private const val BASE_URL = "https://api.tialu.com.br/"
 
     private val logging = HttpLoggingInterceptor().apply {
@@ -17,13 +16,12 @@ object RetrofitClient {
         .addInterceptor(logging)
         .build()
 
-    val OrdersApi: OrdersApi by lazy {
-        val retrofit = Retrofit.Builder()
+    val ordersApi: OrdersApi by lazy {
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
             .build()
-
-        retrofit.create(OrdersApi::class.java)
+            .create(OrdersApi::class.java)
     }
 }
