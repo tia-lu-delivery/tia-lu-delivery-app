@@ -7,7 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
 
-    private const val BASE_URL = "https://api.tialudelivery.com.br/api/v1"
+    private const val BASE_URL = "https://api.tialudelivery.com.br/api/v1/"
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {

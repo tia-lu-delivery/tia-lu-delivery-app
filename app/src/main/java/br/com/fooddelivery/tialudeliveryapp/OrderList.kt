@@ -58,7 +58,7 @@ import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrderListUiState
 @Composable
 fun OrderDetailsPreview() {
     MaterialTheme {
-        OrderListScreen( )
+        OrderListScreen()
     }
 }
 

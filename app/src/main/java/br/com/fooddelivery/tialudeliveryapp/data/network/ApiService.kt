@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("user/orders?page={page}&size={size}")
+    @GET("user/orders")
     suspend fun getOrders(
         @Query("page") page: Int,
         @Query("size") size: Int

@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TiaLuDeliveryAppTheme {
-                OrderListScreen( )
+                OrderListScreen()
             }
         }
     }

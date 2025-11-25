@@ -109,15 +109,14 @@ val mockData = mutableListOf(
 class OrderRepository {
     private val api = RetrofitClient.api
     suspend fun getAllOrders(page: Int = 1, size: Int = 10): List<Order> {
-        try {
-            // retorno da API
-            //return api.getOrders(page, size).pedidos
-        } catch (e: Exception){
-            return listOf()
+        return try {
+            // api.getOrders(page, size).pedidos
+
+            mockData
+        } catch (e: Exception) {
+            e.printStackTrace()
+            mockData
         }
-
-
-        return mockData
     }
 }
 
