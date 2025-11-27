@@ -1,11 +1,17 @@
+package br.com.fooddelivery.tialudeliveryapp.network
+
+import PedidoRepository
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 object RetrofitClient {
 
     private const val BASE_URL = "https://api.tialudelivery.com.br/api/v1/"
 
     private val retrofit by lazy {
-        retrofit2.Retrofit.Builder()
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
