@@ -1,7 +1,9 @@
+
 package br.com.fooddelivery.tialudeliveryapp.repository
 
-import br.com.fooddelivery.tialudeliveryapp.api.PedidoApi
-import br.com.fooddelivery.tialudeliveryapp.models.*
+import br.com.fooddelivery.tialudeliveryapp.models.PedidoReq
+import br.com.fooddelivery.tialudeliveryapp.models.PedidoItemReq
+import br.com.fooddelivery.tialudeliveryapp.models.PedidoRes
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
@@ -17,7 +19,6 @@ class PedidoRepositoryTest {
 
     @Test
     fun `deve retornar erro ADDRESS_NOT_FOUND`() = runBlocking {
-        // JSON do erro
         val erroJson = """
             {
               "codigoErro": "ADDRESS_NOT_FOUND",
@@ -26,8 +27,7 @@ class PedidoRepositoryTest {
             }
         """.trimIndent()
 
-        // Simulando resposta 404 com corpo JSON
-        val errorResponse = Response.error<PedidoResponse>(
+        val errorResponse = Response.error<PedidoRes>(
             404,
             ResponseBody.create("application/json".toMediaType(), erroJson)
         )
@@ -38,14 +38,13 @@ class PedidoRepositoryTest {
 
         val resposta = repository.criarPedido(payload)
 
-        // Verifica que veio erro
         assertFalse(resposta.sucesso)
         assertEquals("ADDRESS_NOT_FOUND", resposta.codigoErro)
     }
 
+
     @Test
     fun `deve retornar erro DELIVERY_OUT_OF_AREA`() = runBlocking {
-        // JSON do erro
         val erroJson = """
             {
               "codigoErro": "DELIVERY_OUT_OF_AREA",
@@ -57,7 +56,7 @@ class PedidoRepositoryTest {
             }
         """.trimIndent()
 
-        val errorResponse = Response.error<PedidoResponse>(
+        val errorResponse = Response.error<PedidoRes>(
             400,
             ResponseBody.create("application/json".toMediaType(), erroJson)
         )
@@ -73,30 +72,29 @@ class PedidoRepositoryTest {
     }
 
 
-    // Função auxiliar que monta seu payload
-    private fun gerarPayloadPedido(): PedidoRequest {
-        return PedidoRequest(
+    /**
+     * Função auxiliar para montar o payload corretamente,
+     * usando seus modelos reais: PedidoReq e PedidoItemReq.
+     */
+    private fun gerarPayloadPedido(): PedidoReq {
+        return PedidoReq(
             idEstabelecimento = "a1b2c3d4e5f6g7h8",
             valorTotalEnviado = 65.70,
             observacoesGerais = "Sem picles no X-Burger.",
             idEnderecoEntrega = "end987654321",
             itens = listOf(
-                ItemPedidoRequest(
+                PedidoItemReq(
                     idProduto = "p1r2o3d4u5t6o7",
                     quantidade = 2,
                     precoUnitarioMomentoCompra = 25.90
                 ),
-                ItemPedidoRequest(
+                PedidoItemReq(
                     idProduto = "p1r2o3d4u5t6o8",
                     quantidade = 1,
                     precoUnitarioMomentoCompra = 18.00
                 )
             ),
-            desconto = DescontoRequest(
-                codigoCupom = "VERAO20",
-                valorDesconto = 4.10,
-                tipoDesconto = "FIXO"
-            )
+            desconto = null // se existir modelo de Desconto, posso incluir
         )
     }
 }
