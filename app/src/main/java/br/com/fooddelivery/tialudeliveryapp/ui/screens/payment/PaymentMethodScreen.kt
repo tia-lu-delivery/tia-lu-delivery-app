@@ -35,6 +35,12 @@ fun PaymentMethodScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    val apiError by viewModel.apiError.collectAsState()
+    LaunchedEffect(apiError) {
+        apiError?.let { errorMessage ->
+            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+        }
+    }
 
     Scaffold(
         containerColor = ScreenBgColor,
@@ -133,6 +139,7 @@ fun PaymentMethodScreen(
                     onValueChange = { viewModel.updateCardName(it) }
                 )
 
+
                 RegistrationTextField(
                     label = "CPF do Titular",
                     placeholder = "000.000.000-00",
@@ -147,11 +154,17 @@ fun PaymentMethodScreen(
             Spacer(Modifier.weight(1f))
             Spacer(Modifier.height(32.dp))
 
+
             Button(
                 onClick = {
-                    if (viewModel.savePayment()) {
-                        onSavePaymentSuccess()
+
+                    val userId = "user9001"
+
+                    if (uiState.isValid) {
+
+                        viewModel.savePayment(userId = userId, onSuccess = onSavePaymentSuccess)
                     } else {
+
                         val msg = if (uiState.cardNumber.isBlank() || uiState.cardName.isBlank()) {
                             "Preencha todos os campos"
                         } else {
@@ -160,13 +173,24 @@ fun PaymentMethodScreen(
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     }
                 },
+
+                enabled = uiState.isValid && !uiState.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = OrangeColor)
             ) {
-                Text("Salvar Cartão", fontSize = 16.sp, color = Color.White)
+                if (uiState.isLoading) {
+
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Salvar Cartão", fontSize = 16.sp, color = Color.White)
+                }
             }
             Spacer(Modifier.height(16.dp))
         }
