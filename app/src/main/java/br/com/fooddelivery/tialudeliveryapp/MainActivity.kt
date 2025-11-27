@@ -22,7 +22,8 @@ class MainActivity : ComponentActivity() {
             TiaLuDeliveryAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ProductDetailsScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        productId = "123"
                     )
                 }
             }
