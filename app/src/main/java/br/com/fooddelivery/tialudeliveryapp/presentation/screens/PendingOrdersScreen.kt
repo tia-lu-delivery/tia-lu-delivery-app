@@ -19,7 +19,6 @@ import br.com.fooddelivery.tialudeliveryapp.presentation.components.OrderCard
 import br.com.fooddelivery.tialudeliveryapp.presentation.viewmodel.PendingOrdersUiState
 import br.com.fooddelivery.tialudeliveryapp.presentation.viewmodel.PendingOrdersViewModel
 
-
 @Composable
 fun PendingOrdersScreen(
     modifier: Modifier = Modifier,
@@ -36,7 +35,6 @@ fun PendingOrdersScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Reage aos diferentes estados (Loading, Error, Success)
         when (val state = uiState) {
             is PendingOrdersUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -50,7 +48,7 @@ fun PendingOrdersScreen(
             }
             is PendingOrdersUiState.Success -> {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(state.orders) { order -> // Usa state.orders
+                    items(state.orders) { order -> 
                         OrderCard(
                             order = order,
                             onAcceptClick = {
@@ -67,8 +65,7 @@ fun PendingOrdersScreen(
     }
 }
 
-
-// O Preview permanece inalterado para não quebrar a visualização
+// O Preview foi ajustado manualmente para exibir dados falsos sem precisar do ViewModel
 @Preview(showBackground = true)
 @Composable
 fun PreviewPendingOrdersScreen() {
@@ -108,8 +105,8 @@ fun PreviewPendingOrdersScreen() {
             items(sampleOrders) { order ->
                 OrderCard(
                     order = order,
-                    onAcceptClick = { }, // Preview não faz nada
-                    onRejectClick = { }  // Preview não faz nada
+                    onAcceptClick = { }, //Aguardando o ViewModel para ACEITAR o pedido (order.id)
+                    onRejectClick = { }   //Aguardando o ViewModel para REJEITAR o pedido (order.id)
                 )
             }
         }
