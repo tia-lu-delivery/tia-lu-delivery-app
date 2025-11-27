@@ -1,0 +1,29 @@
+package br.com.fooddelivery.tialudeliveryapp.model
+
+data class OrderItem(
+    val id: String,
+    val name: String,
+    val quantity: Int,
+    val price: Double
+)
+
+enum class OrderStatus {
+    ABERTO,
+    ACEITO,
+    FAZENDO,
+    FEITO,
+    SAIU_PARA_ENTREGA,
+    ENTREGUE,
+    CANCELADO
+}
+data class Order(
+    val orderNumber: String,
+    val openingTime: String,
+    val status: OrderStatus,
+    val customerName: String,
+    val customerPhone: String,
+    val deliveryAddress: String,
+    val items: MutableList<OrderItem>,
+    val restaurantName: String,
+    val totalValue: Double
+)
