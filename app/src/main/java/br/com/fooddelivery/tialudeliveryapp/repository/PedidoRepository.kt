@@ -1,44 +1,40 @@
-package br.com.fooddelivery.tialudeliveryapp.repository
-
-import br.com.fooddelivery.tialudeliveryapp.api.RetrofitClient
-import br.com.fooddelivery.tialudeliveryapp.models.*
-
-class PedidoRepository : PedidoDataSource {
-
-    private val api = RetrofitClient.api
+class PedidoRepository(
+    private val api: PedidoApi
+) : PedidoDataSource {
 
     override suspend fun obterEndereco(id: String): Resultado<Endereco> {
         return try {
-            Resultado.sucesso(api.obterEndereco(id))
+            val dto = api.obterEndereco(id)
+            Resultado.Sucesso(dto.toModel())
         } catch (e: Exception) {
-            Resultado.erro(e.message ?: "Erro ao buscar endereço")
+            Resultado.Erro("Falha ao obter endereço: ${e.message}")
         }
     }
 
     override suspend fun obterEstabelecimento(id: String): Resultado<Estabelecimento> {
         return try {
-            Resultado.sucesso(api.obterEstabelecimento(id))
+            val dto = api.obterEstabelecimento(id)
+            Resultado.Sucesso(dto.toModel())
         } catch (e: Exception) {
-            Resultado.erro(e.message ?: "Erro ao buscar estabelecimento")
+            Resultado.Erro("Falha ao obter estabelecimento: ${e.message}")
         }
     }
 
     override suspend fun obterProdutos(ids: List<String>): Resultado<List<Produto>> {
         return try {
-            val request = ProdutoIdsRequest(ids)
-            Resultado.sucesso(api.obterProdutos(request))
+            val lista = api.obterProdutos(ids).map { it.toModel() }
+            Resultado.Sucesso(lista)
         } catch (e: Exception) {
-            Resultado.erro(e.message ?: "Erro ao buscar produtos")
+            Resultado.Erro("Falha ao obter produtos: ${e.message}")
         }
     }
 
     override suspend fun enviarPedido(request: PedidoReq): Resultado<PedidoRes> {
         return try {
-            Resultado.sucesso(api.enviarPedido(request))
+            val dto = api.enviarPedido(request.toDTO())
+            Resultado.Sucesso(dto.toModel())
         } catch (e: Exception) {
-            Resultado.erro(e.message ?: "Erro ao enviar pedido")
+            Resultado.Erro("Erro ao criar pedido: ${e.message}")
         }
     }
 }
-
-
