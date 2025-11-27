@@ -5,18 +5,71 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fooddelivery.tialudeliveryapp.data.model.OrderItem
 import br.com.fooddelivery.tialudeliveryapp.data.model.PendingOrder
 import br.com.fooddelivery.tialudeliveryapp.presentation.components.OrderCard
-
+import br.com.fooddelivery.tialudeliveryapp.presentation.viewmodel.PendingOrdersUiState
+import br.com.fooddelivery.tialudeliveryapp.presentation.viewmodel.PendingOrdersViewModel
 
 @Composable
-fun PendingOrdersScreen() {
-    // Simulação temporária de pedidos (antes de fazermos o ViewModel)
+fun PendingOrdersScreen(
+    modifier: Modifier = Modifier,
+    viewModel: PendingOrdersViewModel = viewModel()
+) {
+    // Observa o estado (uiState) vindo do ViewModel
+    val uiState by viewModel.uiState.collectAsState()
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text(
+            text = "Pedidos Pendentes",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        when (val state = uiState) {
+            is PendingOrdersUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            is PendingOrdersUiState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                }
+            }
+            is PendingOrdersUiState.Success -> {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(state.orders) { order -> 
+                        OrderCard(
+                            order = order,
+                            onAcceptClick = {
+                                viewModel.acceptOrder(order.id)
+                            },
+                            onRejectClick = {
+                                viewModel.rejectOrder(order.id)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// O Preview foi ajustado manualmente para exibir dados falsos sem precisar do ViewModel
+@Preview(showBackground = true)
+@Composable
+fun PreviewPendingOrdersScreen() {
+    // Dados de exemplo apenas para o Preview
     val sampleOrders = listOf(
         PendingOrder(
             id = "1",
@@ -40,6 +93,7 @@ fun PendingOrdersScreen() {
         )
     )
 
+    // UI simulada para o Preview
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
             text = "Pedidos Pendentes",
@@ -47,32 +101,14 @@ fun PendingOrdersScreen() {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-
-
         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(sampleOrders) { order ->
-
-
                 OrderCard(
                     order = order,
-                    onAcceptClick = {
-                        //Aguardando o ViewModel para ACEITAR o pedido (order.id)
-                    },
-                    onRejectClick = {
-                        //Aguardando o ViewModel para REJEITAR o pedido (order.id)
-                    }
+                    onAcceptClick = { }, //Aguardando o ViewModel para ACEITAR o pedido (order.id)
+                    onRejectClick = { }   //Aguardando o ViewModel para REJEITAR o pedido (order.id)
                 )
             }
         }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewPendingOrdersScreen() {
-    PendingOrdersScreen()
-}
-
-
-
