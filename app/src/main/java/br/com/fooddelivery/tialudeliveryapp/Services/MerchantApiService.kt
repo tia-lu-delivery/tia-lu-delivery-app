@@ -1,6 +1,6 @@
 package br.com.fooddelivery.tialudeliveryapp.api
 
-import br.com.fooddelivery.tialudeliveryapp.model.Establishment
+import br.com.fooddelivery.tialudeliveryapp.viewmodel.Establishment
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

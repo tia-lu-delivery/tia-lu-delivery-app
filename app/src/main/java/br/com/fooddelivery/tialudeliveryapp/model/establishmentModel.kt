@@ -11,6 +11,22 @@ enum class PartnerStatus {
     FINALIZADO
 }
 
+data class Address(
+    val cep: String = "",
+    val logradouro: String = "",
+    val complemento: String = "",
+    val cidade: String = "",
+    val estado: String = ""
+)
+
+data class Establishment(
+    val cnpj: String ="",
+    val razaoSocial: String = "",
+    val nomeFantasia: String = "",
+    val inscricaoEstadual: String = "",
+    val endereco: Address = Address()
+)
+
 data class PartnerDetails(
     val cpf: String = "",
     val rg: String = "",

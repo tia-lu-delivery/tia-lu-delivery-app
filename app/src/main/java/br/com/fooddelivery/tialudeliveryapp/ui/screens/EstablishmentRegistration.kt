@@ -42,7 +42,7 @@ import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(modifier: Modifier = Modifier) {
     var razaoSocial by remember { mutableStateOf("") }
     var nomeFantasia by remember { mutableStateOf("") }
     var cnpj by remember { mutableStateOf("") }

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
-import br.com.fooddelivery.tialudeliveryapp.model.Establishment
 import br.com.fooddelivery.tialudeliveryapp.api.RetrofitInstance
 import kotlinx.coroutines.launch
 
