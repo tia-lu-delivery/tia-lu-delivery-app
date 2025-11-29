@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import br.com.fooddelivery.tialudeliveryapp.data.network.RetrofitClient
+import br.com.fooddelivery.tialudeliveryapp.data.network.FakeOrderApi
 import br.com.fooddelivery.tialudeliveryapp.data.repository.OrdersRepositoryImpl
 import br.com.fooddelivery.tialudeliveryapp.ui.TelaListaPedidos
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
@@ -16,7 +16,7 @@ import br.com.fooddelivery.tialudeliveryapp.viewmodel.OrdersViewModelFactory
 
 class MainActivity : ComponentActivity() {
     private val viewModelFactory by lazy {
-        OrdersViewModelFactory(OrdersRepositoryImpl(RetrofitClient.ordersApi))
+        OrdersViewModelFactory(OrdersRepositoryImpl(FakeOrderApi()))
     }
 
     private val viewModel: OrdersListViewModel by viewModels { viewModelFactory }

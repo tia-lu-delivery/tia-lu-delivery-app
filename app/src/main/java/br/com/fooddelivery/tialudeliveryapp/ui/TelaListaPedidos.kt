@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import br.com.fooddelivery.tialudeliveryapp.model.OrderPresentation
 import br.com.fooddelivery.tialudeliveryapp.model.OrderStatus
 import br.com.fooddelivery.tialudeliveryapp.model.toLabelPt
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,80 +37,115 @@ fun TelaListaPedidos(
             .background(Color.White)
             .padding(16.dp)
     ) {
+
         Text(
             text = "Meus Pedidos",
             style = MaterialTheme.typography.titleLarge.copy(
-                color = Color(0xFF1C1C1C),
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                fontSize = 22.sp
+                color = Color(0xFF1C1C1C)
             ),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Dropdown sem menuAnchor
-        ExposedDropdownMenuBox(
+        PedidoStatusDropdown(
             expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            TextField(
-                value = activeFilter?.toLabelPt() ?: "Todos",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Filtrar por status") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                modifier = Modifier.fillMaxWidth()
-            )
+            selectedLabel = activeFilter?.toLabelPt() ?: "Todos",
+            filters = availableFilters,
+            onExpandChange = { expanded = !expanded },
+            onFilterSelected = {
+                onFilterChange(it)
+                expanded = false
+            }
+        )
 
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                availableFilters.forEach { (status, label) ->
-                    DropdownMenuItem(
-                        text = { Text(label) },
-                        onClick = {
-                            onFilterChange(status)
-                            expanded = false
-                        }
-                    )
+        Spacer(Modifier.height(16.dp))
+
+        when {
+            isLoading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
             }
+
+            errorMessage != null -> ErroContent(errorMessage, onRetry)
+
+            else -> ListaPedidosContent(orders)
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PedidoStatusDropdown(
+    expanded: Boolean,
+    selectedLabel: String,
+    filters: List<Pair<OrderStatus?, String>>,
+    onExpandChange: () -> Unit,
+    onFilterSelected: (OrderStatus?) -> Unit
+) {
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { onExpandChange() }
+    ) {
+        TextField(
+            value = selectedLabel,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Filtrar por status") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+        )
 
-        if (isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            return@Column
-        }
-
-        if (errorMessage != null) {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Erro: $errorMessage")
-                Spacer(Modifier.height(8.dp))
-                Button(onClick = onRetry) { Text("Tentar novamente") }
-            }
-            return@Column
-        }
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { onExpandChange() }
         ) {
-            items(orders, key = { it.id }) { pedido ->
-                PedidoItemPresentation(pedido)
+            filters.forEach { (status, label) ->
+                DropdownMenuItem(
+                    text = { Text(label) },
+                    onClick = { onFilterSelected(status) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PedidoItemPresentation(pedido: OrderPresentation) {
+private fun ListaPedidosContent(
+    orders: List<OrderPresentation>
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(bottom = 24.dp)
+    ) {
+        items(orders, key = { it.id }) { pedido ->
+            PedidoItemCard(pedido)
+        }
+    }
+}
+
+@Composable
+private fun ErroContent(
+    errorMessage: String,
+    onRetry: () -> Unit
+) {
+    Column(
+        Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Erro: $errorMessage", color = Color.Red)
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = onRetry) {
+            Text("Tentar novamente")
+        }
+    }
+}
+
+@Composable
+private fun PedidoItemCard(pedido: OrderPresentation) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
@@ -123,39 +159,40 @@ private fun PedidoItemPresentation(pedido: OrderPresentation) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Column {
                 Text(pedido.customerName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text("Data: ${pedido.openedAtFormatted}", fontSize = 13.sp, color = Color.Gray)
-            }
-
-            Box(
-                modifier = Modifier
-                    .background(
-                        when (pedido.status) {
-                            OrderStatus.ENTREGUE -> Color(0xFFE8F5E9)
-                            OrderStatus.CANCELADO -> Color(0xFFFFEBEE)
-                            OrderStatus.FAZENDO -> Color(0xFFFFF3E0)
-                            OrderStatus.ACEITO -> Color(0xFFF5F5F5)
-                            else -> Color(0xFFF5F5F5)
-                        },
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    .padding(horizontal = 10.dp, vertical = 6.dp)
-            ) {
                 Text(
-                    pedido.statusLabel,
-                    color = when (pedido.status) {
-                        OrderStatus.ENTREGUE -> Color(0xFF43A047)
-                        OrderStatus.CANCELADO -> Color(0xFFD32F2F)
-                        OrderStatus.FAZENDO -> Color(0xFFFFA726)
-                        OrderStatus.ACEITO -> Color(0xFF757575)
-                        else -> Color(0xFF616161)
-                    },
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 13.sp
+                    "Data: ${pedido.openedAtFormatted}",
+                    fontSize = 13.sp,
+                    color = Color.Gray
                 )
             }
+
+            StatusBadge(
+                label = pedido.statusLabel,
+                status = pedido.status
+            )
         }
+    }
+}
+
+@Composable
+private fun StatusBadge(label: String, status: OrderStatus) {
+    val (bg, text) = when (status) {
+        OrderStatus.ENTREGUE -> Color(0xFFE8F5E9) to Color(0xFF43A047)
+        OrderStatus.CANCELADO -> Color(0xFFFFEBEE) to Color(0xFFD32F2F)
+        OrderStatus.FAZENDO -> Color(0xFFFFF3E0) to Color(0xFFFFA726)
+        OrderStatus.ACEITO -> Color(0xFFF5F5F5) to Color(0xFF757575)
+        else -> Color(0xFFF5F5F5) to Color(0xFF616161)
+    }
+
+    Box(
+        modifier = Modifier
+            .background(bg, shape = MaterialTheme.shapes.medium)
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Text(label, color = text, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
     }
 }
 
