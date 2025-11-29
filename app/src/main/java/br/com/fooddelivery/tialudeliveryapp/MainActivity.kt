@@ -5,45 +5,38 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import br.com.fooddelivery.tialudeliveryapp.repository.FakeRegistroRepository
+import br.com.fooddelivery.tialudeliveryapp.ui.TelaNovoPedido
 import br.com.fooddelivery.tialudeliveryapp.ui.theme.TiaLuDeliveryAppTheme
+import br.com.fooddelivery.tialudeliveryapp.viewmodel.PedidoRegistroViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             TiaLuDeliveryAppTheme {
+                // Instancia fake repo e ViewModel
+                val fakeRepo = remember { FakeRegistroRepository(currentUserId = "user123") }
+                val pedidoViewModel = remember { PedidoRegistroViewModel(fakeRepo, "user123") }
 
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    TelaNovoPedido(
+                        viewModel = pedidoViewModel,
+                        titulo = "Novo Pedido",
+                        onBack = { finish() }, // volta para a tela anterior (fecha app neste caso)
+                        onPedidoCriado = { pedidoId ->
+                            // Apenas loga no console por enquanto
+                            println("Pedido criado com sucesso: $pedidoId")
+                        }
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TiaLuDeliveryAppTheme {
-        Greeting("Android")
     }
 }
